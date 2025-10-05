@@ -1,0 +1,14 @@
+image: python:latest
+
+stages:
+    - test
+
+test:
+    stage: test
+    only:
+        - tags
+    script:
+        - echo "Starting tests on package.json"
+        - cd hry_submission
+        - python test_package.py
+

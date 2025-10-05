@@ -1,0 +1,32 @@
+{
+    "title": "Packman",
+    "team": 33,
+    "source": "hry_project",
+    "has_web_build": true,
+    "authors": [
+        {
+            "fullname": "Jan Example",
+            "email": "exampjan@fel.cvut.cz"
+        },
+        {
+            "fullname": "Aleš Vopršálek",
+            "email": "voprsale@fit.cvut.cz"
+        }
+    ],
+    "term": 241,
+    "summary": "A game focused on village protection with basic exploration of surroundings",
+    "opensource": true,
+    "genres": [
+        "Action",
+        "Survival",
+        "Third-person"
+    ],
+    "links": {
+        "facebook": "https://www.facebook.com/...",
+        "instagram": "https://www.instagram.com/...",
+        "x": "https://www.x(twitter).com/...",
+        "itchio": "https://www.itch.io/...",
+        "discord": "https://www.discord.com/...",
+        "other": "https://www.other.com/..."
+    }
+}

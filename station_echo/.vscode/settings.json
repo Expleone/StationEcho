@@ -1,0 +1,17 @@
+{
+    "files.exclude": {
+        "Library": true,
+        "Temp": true,
+        "Logs": true,
+        "obj": true
+    },
+    "omnisharp.useModernNet": true,
+    "omnisharp.path": "latest",
+    "editor.detectIndentation": false,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "[csharp]": {
+        "editor.formatOnSave": true
+    },
+    "dotnet.defaultSolution": "station_echo.sln"
+}

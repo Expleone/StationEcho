@@ -7,8 +7,12 @@ public class ThirdPersonMovement : MonoBehaviour
 
     public CharacterController controller;
     public Transform cam;
+    public Transform mesh;
+    public Material eyes_idle;
+    public Material eyes_run;
 
-    public float speed = 6f;
+    public float walkSpeed = 6f;
+    public float runSpeed = 12f;
 
     public float turnSmoothTime = 0.1f;
     float turnSmoothVelocity;
@@ -18,9 +22,11 @@ public class ThirdPersonMovement : MonoBehaviour
 
     Vector3 velocity;
 
+    private Animator animator;
+
     void Start()
     {
-
+	animator = mesh.GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -38,7 +44,6 @@ public class ThirdPersonMovement : MonoBehaviour
         }
 
 
-
         // Jump
         if (InputSystem.actions.FindAction("Jump").triggered && controller.isGrounded)
         {
@@ -49,8 +54,6 @@ public class ThirdPersonMovement : MonoBehaviour
             velocity.y = Mathf.Sqrt(jumpForce * -2f * Physics.gravity.y);
             doubleJumpUsed = true;
         }
-
-
 
 
         // Apply gravity over time
@@ -67,11 +70,26 @@ public class ThirdPersonMovement : MonoBehaviour
                 inAirCorrection = 0.5f;
             }
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            controller.Move(moveDir * (speed * Time.deltaTime * inAirCorrection));
-
-        }
-        
+		
+	    float actualSpeed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
+            controller.Move(moveDir * (actualSpeed * Time.deltaTime * inAirCorrection));
+        };
         // Apply vertical movement (gravity and jump)
         controller.Move(velocity * Time.deltaTime);
+
+	setAnimation(direction.magnitude);
+    }
+
+    private void setAnimation(float magnitude)
+    {
+	float animationSpeed = 0;	
+	
+    	if (magnitude >= 0.1)
+    	{
+            animationSpeed = Input.GetKey(KeyCode.LeftShift) ? 2 : 1;
+        }
+
+        animator.SetFloat("Speed", animationSpeed);
+	Debug.Log($"speed: {animationSpeed}");
     }
 }

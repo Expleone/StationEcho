@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class ThirdPersonMovement : MonoBehaviour
 {
@@ -8,21 +9,82 @@ public class ThirdPersonMovement : MonoBehaviour
     public CharacterController controller;
     public Transform cam;
     public Transform mesh;
-    public Material eyes_idle;
-    public Material eyes_run;
 
-    public float walkSpeed = 6f;
-    public float runSpeed = 12f;
+    public float speed = 6f;
 
     public float turnSmoothTime = 0.1f;
     float turnSmoothVelocity;
-    public float jumpForce = 2f;
-
+    public float jumpForce = 0.5f;
+    public float groundCheckDistance = 0.2f;
+    public float groundCheckRadius = 0.3f;
+    public LayerMask groundMask;
+    private bool isHit;
+    RaycastHit hit;
     private bool doubleJumpUsed = false;
+    private Animator animator;
 
     Vector3 velocity;
 
-    private Animator animator;
+    bool IsGrounded()
+    {
+        // Get the gravity direction (normalized)
+        Vector3 gravityDirection = Physics.gravity.normalized;
+        groundCheckRadius = controller.radius;
+        groundCheckDistance = controller.height / 2f - controller.radius + 0.1f;
+
+        Vector3 castOrigin = transform.position;
+
+        isHit = Physics.SphereCast(castOrigin, groundCheckRadius, gravityDirection, out hit, groundCheckDistance, groundMask);
+        if (isHit){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        // Only draw in the editor
+        if (Application.isPlaying) 
+        {
+            // Set the color for the cast
+            Gizmos.color = Color.yellow; 
+
+            // Draw the start sphere
+            //Gizmos.DrawWireSphere(transform.position, groundCheckRadius);
+
+            if (isHit)
+            {
+                // If hit, change color to visualize success
+                Gizmos.color = Color.red; 
+
+                // Calculate the center of the sphere at the moment of impact
+                Vector3 hitSphereCenter = transform.position + Physics.gravity.normalized * hit.distance;
+
+                // Draw the sphere at the hit point
+                Gizmos.DrawWireSphere(hitSphereCenter, groundCheckRadius);
+
+                // Draw a line segment to show the sweep path up to the hit
+                Gizmos.DrawLine(transform.position, hitSphereCenter);
+
+                // Optional: Draw a point at the impact position
+                Gizmos.DrawSphere(hit.point, 0.05f);
+
+            }
+            else
+            {
+                Gizmos.color = Color.green;
+                // If no hit, draw the full cast distance (from start sphere's center)
+                Vector3 endPosition = transform.position + Physics.gravity.normalized * (controller.height / 2f - controller.radius + 0.1f);
+                Gizmos.DrawLine(transform.position, endPosition);
+                
+                // Draw a wire sphere at the max distance to show the sweep end
+                Gizmos.DrawWireSphere(endPosition, groundCheckRadius);
+            }
+        }
+    }
+
 
     void Start()
     {
@@ -36,60 +98,76 @@ public class ThirdPersonMovement : MonoBehaviour
         Vector2 direction2d = InputSystem.actions.FindAction("Move").ReadValue<Vector2>();
         Vector3 direction = new Vector3(direction2d.x, 0f, direction2d.y).normalized;
 
+        bool isGrounded = IsGrounded();
+
         // Apply gravity
-        if (controller.isGrounded && velocity.y < 0)
+        if (isGrounded && Vector3.Dot(velocity, Physics.gravity.normalized) > 0)
         {
-            velocity.y = Physics.gravity.y / 3f; // Small value to keep grounded
+            velocity = Physics.gravity.normalized * (Physics.gravity.magnitude / 3f); // Small value to keep grounded
             doubleJumpUsed = false;
         }
 
 
+
         // Jump
-        if (InputSystem.actions.FindAction("Jump").triggered && controller.isGrounded)
+        if (InputSystem.actions.FindAction("Jump").triggered && isGrounded)
         {
-            velocity.y = Mathf.Sqrt(jumpForce * -2f * Physics.gravity.y);
+            velocity = -Physics.gravity.normalized * jumpForce;
         }
-        else if (InputSystem.actions.FindAction("Jump").triggered && !controller.isGrounded && !doubleJumpUsed)
+        else if (InputSystem.actions.FindAction("Jump").triggered && !isGrounded && !doubleJumpUsed)
         {
-            velocity.y = Mathf.Sqrt(jumpForce * -2f * Physics.gravity.y);
+            velocity = -jumpForce * Physics.gravity.normalized;
             doubleJumpUsed = true;
+        }
+
+
+        //Sprint
+        if (InputSystem.actions.FindAction("Sprint").IsPressed())
+        {
+            speed = 10f;
+        }
+        else
+        {
+            speed = 6f;
         }
 
 
         // Apply gravity over time
         velocity += Physics.gravity * Time.deltaTime;
-        
+
         if (direction.magnitude >= 0.1f)
         {
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
-            transform.rotation = Quaternion.Euler(0f, angle, 0f);
+
+            // Preserve the current X and Z rotation, only update Y rotation
+            Vector3 currentRotation = transform.eulerAngles;
+            transform.rotation = Quaternion.Euler(currentRotation.x, angle, currentRotation.z);
+
+
             float inAirCorrection = 1f;
-            if (!controller.isGrounded)
+            if (!isGrounded)
             {
                 inAirCorrection = 0.5f;
             }
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-		
-	    float actualSpeed = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
-            controller.Move(moveDir * (actualSpeed * Time.deltaTime * inAirCorrection));
-        };
+            controller.Move(moveDir * (speed * Time.deltaTime * inAirCorrection));
+        }
+
+        // print(velocity);
         // Apply vertical movement (gravity and jump)
         controller.Move(velocity * Time.deltaTime);
-
-	setAnimation(direction.magnitude);
+        setAnimation(direction.magnitude);
     }
 
     private void setAnimation(float magnitude)
     {
-	float animationSpeed = 0;	
-	
-    	if (magnitude >= 0.1)
-    	{
-            animationSpeed = Input.GetKey(KeyCode.LeftShift) ? 2 : 1;
+        float animationSpeed = 0f;
+        if (magnitude >= 0.1f)
+        {
+            animationSpeed = Input.GetKey(KeyCode.LeftShift) ? 2f : 1f;
         }
-
         animator.SetFloat("Speed", animationSpeed);
-	Debug.Log($"speed: {animationSpeed}");
     }
 }
+

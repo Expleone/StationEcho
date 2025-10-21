@@ -47,10 +47,10 @@ public class MenuManager : MonoBehaviour
         GameManager.Instance.UpdateGameState(GameState.EscMenu);
     }
 
-    public void LoadGameStateGame()
+    public void LoadGameStateGame(string sceneName)
     {
         DisableMenu();
-        SceneManager.LoadScene("Game");
+        SceneManager.LoadScene(sceneName);
         GameManager.Instance.UpdateGameState(GameState.Game);
     }
     public void SwitchGameStateToGame()

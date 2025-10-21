@@ -30,7 +30,32 @@ public class UpdateInteractionArea : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (!other.gameObject.GetComponent<Interactable>()) return;
+        if (other.gameObject.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)
+        {
+            PickableTriggerEnter(other);
+        }
+        else if (other.gameObject.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pressable)
+        {
+            PressableTriggerEnter(other);
+        }
+    }
 
+    private void OnTriggerExit(Collider other)
+    {
+        if (!other.gameObject.GetComponent<Interactable>()) return;
+        if (other.gameObject.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)
+        {
+            PickableTriggerExit(other);
+        }
+         else if (other.gameObject.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pressable)
+        {
+            PressableTriggerExit(other);
+        }
+    }
+
+
+    private void PickableTriggerEnter(Collider other)
+    {
         if (CheckLineOfSight(other.gameObject))
         {
             playerInteractionLogic.unavailableInteractions.Add(other.gameObject);
@@ -41,14 +66,24 @@ public class UpdateInteractionArea : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (!other.gameObject.GetComponent<Interactable>()) return;
 
+    private void PickableTriggerExit(Collider other)
+    {
         if (!playerInteractionLogic.availableInteractions.Remove(other.gameObject))
         {
             playerInteractionLogic.unavailableInteractions.Remove(other.gameObject);
         }
+    }
+
+    private void PressableTriggerEnter(Collider other)
+    {
+        // To Implement
+    }
+    
+
+    private void PressableTriggerExit(Collider other)
+    {
+        // To Implement
     }
 
     // false - if clear, true - not clear

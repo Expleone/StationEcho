@@ -14,6 +14,7 @@ public class PlatformLogic : MonoBehaviour
     private bool moving = false;
     private float currentWaitTime = 0;
     private Vector3 linearVelocity = new Vector3(0, 0, 0);
+    public List<GameObject> passengers = new List<GameObject>();
 
     void Start()
     {
@@ -59,13 +60,24 @@ public class PlatformLogic : MonoBehaviour
                 linearVelocity = new Vector3(0, 0, 0);
                 currentWaypoint = currentWaypoint + 1 >= waypointCount ? 0 : currentWaypoint + 1;
             }
-            else platformObjectTransform.localPosition += linearVelocity * speed * Time.deltaTime;
+            else
+            {
+                platformObjectTransform.localPosition += linearVelocity * speed * Time.deltaTime;
+                managePassengers();
+            }
         }
-
+    }
+    
+    private void managePassengers()
+    {
+        foreach(GameObject gameObject in passengers)
+        {
+            gameObject.transform.position += linearVelocity * speed * Time.deltaTime;
+        }
     }
 
 
-    void calculateNewLinVel()
+    private void calculateNewLinVel()
     {
         Vector3 a = waypointTransforms[currentWaypoint].localPosition;
         Vector3 b = platformObjectTransform.localPosition;
@@ -75,7 +87,7 @@ public class PlatformLogic : MonoBehaviour
     }
 
 
-    bool hasArrived()
+    private bool hasArrived()
     {
         Vector3 a = waypointTransforms[currentWaypoint].localPosition;
 

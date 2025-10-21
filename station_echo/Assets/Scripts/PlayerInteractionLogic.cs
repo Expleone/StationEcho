@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,10 +7,21 @@ using UnityEngine.InputSystem;
 public class PlayerInteractionLogic : MonoBehaviour
 {
     [SerializeField] public LayerMask layerMask;
+    [SerializeField] private bool increaseCollider;
     public List<GameObject> availableInteractions = new List<GameObject>();
     public List<GameObject> unavailableInteractions = new List<GameObject>();
     private GameObject currentlyHolding = null;
 
+    private Vector3 originalColliderSize;
+
+    private BoxCollider originalCollider;
+
+
+    void Start()
+    {
+    
+    }
+    
     void Update()
     {
         if (InputSystem.actions.FindAction("Interact").triggered && !currentlyHolding && availableInteractions.Count != 0)
@@ -40,6 +52,8 @@ public class PlayerInteractionLogic : MonoBehaviour
         }
     }
 }
+
+
 
 public class SortByProximity : IComparer<GameObject>
 {

@@ -24,8 +24,8 @@ public class ChangeGravity : MonoBehaviour
             return;
         }
 
-        CinemachineCamera cinemachineCamera = other.GetComponentInChildren<CinemachineCamera>();
-        CinemachineFreeLookModifier freeLookModifier = cinemachineCamera.GetComponent<CinemachineFreeLookModifier>();
+        // CinemachineCamera cinemachineCamera = other.GetComponentInChildren<CinemachineCamera>();
+        // CinemachineFreeLookModifier freeLookModifier = cinemachineCamera.GetComponent<CinemachineFreeLookModifier>();
 
         
 

@@ -165,7 +165,7 @@ public class ThirdPersonMovement : MonoBehaviour
         float animationSpeed = 0f;
         if (magnitude >= 0.1f)
         {
-            animationSpeed = Input.GetKey(KeyCode.LeftShift) ? 2f : 1f;
+            animationSpeed = InputSystem.actions.FindAction("Sprint").IsPressed() ? 2f : 1f;
         }
         animator.SetFloat("Speed", animationSpeed);
     }

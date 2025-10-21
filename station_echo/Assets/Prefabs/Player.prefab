@@ -463,6 +463,7 @@ GameObject:
   - component: {fileID: 4752372477792730026}
   - component: {fileID: 7685243777210459857}
   - component: {fileID: 645978774937072571}
+  - component: {fileID: 1582097795134907659}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -555,6 +556,19 @@ MonoBehaviour:
   increaseCollider: 0
   availableInteractions: []
   unavailableInteractions: []
+--- !u!114 &1582097795134907659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6990248578237922844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ce730b439f5e8e44bfd16c1d8501f0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CollisionLogic
+  pushPower: 2
 --- !u!1001 &7861268645277671089
 PrefabInstance:
   m_ObjectHideFlags: 0

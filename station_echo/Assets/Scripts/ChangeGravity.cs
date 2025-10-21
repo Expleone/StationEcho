@@ -1,18 +1,33 @@
 using UnityEngine;
+using Unity.Cinemachine;
 
 public class ChangeGravity : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
 
-    CameraTargetPoint cameraTargetPoint;
+    [SerializeField] public CameraTargetPoint cameraTargetPoint;
     Transform playerTransform;
+
+
+    
+
+    private void Start()
+    {
+        
+    }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Player")){
+        if (!other.CompareTag("Player"))
+        {
             return;
         }
+
+        CinemachineCamera cinemachineCamera = other.GetComponentInChildren<CinemachineCamera>();
+        CinemachineFreeLookModifier freeLookModifier = cinemachineCamera.GetComponent<CinemachineFreeLookModifier>();
+
+        
 
         cameraTargetPoint = other.GetComponentInChildren<CameraTargetPoint>();
         playerTransform = other.transform;

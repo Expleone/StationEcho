@@ -113,6 +113,7 @@ public class ThirdPersonMovement : MonoBehaviour
         if (InputSystem.actions.FindAction("Jump").triggered && isGrounded)
         {
             velocity = -Physics.gravity.normalized * jumpForce;
+	    animator.SetTrigger("jump");
         }
         else if (InputSystem.actions.FindAction("Jump").triggered && !isGrounded && !doubleJumpUsed)
         {
@@ -162,6 +163,14 @@ public class ThirdPersonMovement : MonoBehaviour
 
     private void setAnimation(float magnitude)
     {
+	if(IsGrounded())
+	{
+	    animator.SetBool("isInAir", false);
+	}else
+	{
+	    animator.SetBool("isInAir", true);
+	}
+
         float animationSpeed = 0f;
         if (magnitude >= 0.1f)
         {

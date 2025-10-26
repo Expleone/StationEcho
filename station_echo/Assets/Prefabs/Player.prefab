@@ -660,7 +660,34 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 8516066919551456630}
+    - targetCorrespondingSourceObject: {fileID: -871192335480010556, guid: 8bc81d4f01d9c2e419e34da9b3be1a37,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4470293463333276929}
   m_SourcePrefab: {fileID: 100100000, guid: 8bc81d4f01d9c2e419e34da9b3be1a37, type: 3}
+--- !u!1 &303962236210027901 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -871192335480010556, guid: 8bc81d4f01d9c2e419e34da9b3be1a37,
+    type: 3}
+  m_PrefabInstance: {fileID: 8637626067009754553}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4470293463333276929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303962236210027901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdb3127380ead39459c4e7b01ac5e922, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MaterialSwapper
+  availableMaterials:
+  - name: eyes_idle
+    material: {fileID: 2100000, guid: 25678b94dc17e444f9dceda1e336ab7e, type: 2}
+  - name: eyes_run
+    material: {fileID: 2100000, guid: 7c1178fd5c588be4e9ae10780fea9d3c, type: 2}
 --- !u!4 &8094580799576748626 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8bc81d4f01d9c2e419e34da9b3be1a37,

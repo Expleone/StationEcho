@@ -3,28 +3,98 @@ using UnityEngine;
 
 public class DoorController : MonoBehaviour
 {
-    public Door door;
-    public List<PressurePlate> keys;
+    public enum ActivationMode
+    {
+        AND,
+        OR,
+	XOR
+    }
+
+    [Header("Activation Settings")]
+    public ActivationMode activationMode = ActivationMode.OR;
+
+    [Header("Controlled Elements")]
+    public List<Door> doors;
+    public List<PressurePlate> plates;
+    public List<Switch> switches;
+    public List<Button> buttons;
 
     private void Awake()
     {
-        keys = new List<PressurePlate>(GetComponentsInChildren<PressurePlate>());
-        door = GetComponentInChildren<Door>();
+        doors = new List<Door>(GetComponentsInChildren<Door>());
+        plates = new List<PressurePlate>(GetComponentsInChildren<PressurePlate>());
+        switches = new List<Switch>(GetComponentsInChildren<Switch>());
+        buttons = new List<Button>(GetComponentsInChildren<Button>());
     }
 
     private void Update()
     {
-        if (keys != null && keys.Count > 0)
+        bool allActive = true;
+        bool anyActive = false;
+	bool moreThanOneActive = false;
+
+        foreach (var plate in plates)
         {
-            foreach (var key in keys)
+            if (plate != null)
             {
-                if (!key.IsPressed)
-                {
-                    if (door.IsOpen) door.Close();
-                    return;
-                }
+                if (plate.IsPressed)
+		{ 
+		    if(anyActive) moreThanOneActive = true;
+		    anyActive = true;
+		}
+                else allActive = false;
             }
-            if (!door.IsOpen) door.Open();
+        }
+
+        foreach (var sw in switches)
+        {
+            if (sw != null)
+            {
+                if (sw.IsOn)
+		{ 
+		    if(anyActive) moreThanOneActive = true;
+		    anyActive = true;
+		}
+                else allActive = false;
+            }
+        }
+
+        foreach (var btn in buttons)
+        {
+            if (btn != null)
+            {
+                if (btn.IsPressed)
+		{ 
+		    if(anyActive) moreThanOneActive = true;
+		    anyActive = true;
+		}
+                else allActive = false;
+            }
+        }
+
+        bool shouldOpen = false;
+	switch(activationMode)
+	{
+	    case ActivationMode.OR : shouldOpen = anyActive; 
+	    break;
+
+	    case ActivationMode.AND : shouldOpen = allActive;
+	    break;
+
+	    case ActivationMode.XOR : shouldOpen = !(moreThanOneActive || !anyActive);
+	    break;
+	}
+
+        foreach (var door in doors)
+        {
+            if (shouldOpen)
+            {
+                if (!door.IsOpen) door.Open();
+            }
+            else
+            {
+                if (door.IsOpen) door.Close();
+            }
         }
     }
 }

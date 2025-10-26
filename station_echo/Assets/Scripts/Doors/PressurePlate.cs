@@ -11,12 +11,14 @@ public class PressurePlate : MonoBehaviour
     private Coroutine AnimationCoroutine;
     private int objectsOnPlate = 0;
     private Vector3 visualStartPos;
+    private MaterialSwapper swapper;
 
     private void Awake()
     {
         if (PlateVisual == null)
             PlateVisual = transform.GetChild(0);
         visualStartPos = PlateVisual.localPosition;
+	swapper = PlateVisual.GetComponent<MaterialSwapper>();
         PressAmount = Mathf.Abs(PlateVisual.localScale.y * 0.9f);
     }
 
@@ -26,6 +28,7 @@ public class PressurePlate : MonoBehaviour
         if (!IsPressed && objectsOnPlate > 0)
         {
             Press();
+	    swapper.SetMaterial(0, "pressed");
         }
     }
 
@@ -35,6 +38,7 @@ public class PressurePlate : MonoBehaviour
         if (IsPressed && objectsOnPlate == 0)
         {
             Unpress();
+	    swapper.SetMaterial(0, "base");
         }
     }
 

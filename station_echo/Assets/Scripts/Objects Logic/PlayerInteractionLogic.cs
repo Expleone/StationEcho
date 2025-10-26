@@ -7,21 +7,16 @@ using UnityEngine.InputSystem;
 public class PlayerInteractionLogic : MonoBehaviour
 {
     [SerializeField] public LayerMask layerMask;
-    [SerializeField] private bool increaseCollider;
+    [SerializeField] public float distanceToPickableItem;
     public List<GameObject> availableInteractions = new List<GameObject>();
     public List<GameObject> unavailableInteractions = new List<GameObject>();
     private GameObject currentlyHolding = null;
-
-    private Vector3 originalColliderSize;
-
-    private BoxCollider originalCollider;
-
 
     void Start()
     {
     
     }
-    
+
     void Update()
     {
         if (InputSystem.actions.FindAction("Interact").triggered && !currentlyHolding && availableInteractions.Count != 0)
@@ -50,7 +45,33 @@ public class PlayerInteractionLogic : MonoBehaviour
 
             currentlyHolding = null;
         }
+
+        if (currentlyHolding)
+        {
+            CheckCollisionWithWalls();
+        }
     }
+    
+    private void CheckCollisionWithWalls()
+    {
+        float maxDistance = currentlyHolding.transform.localScale.x + distanceToPickableItem;
+        RaycastHit hit;
+
+        if (Physics.BoxCast(transform.position, currentlyHolding.transform.localScale / 2, transform.forward, out hit,
+                             Quaternion.identity, maxDistance, layerMask))
+        {
+            // Debug.Log("###########");
+            // Debug.Log("BoxCast hit: " + hit.collider.name);
+            // Debug.Log("Hit point: " + hit.point);
+            Vector3 forwardCopy = transform.forward;
+            forwardCopy *= maxDistance - hit.distance + 0.01f;
+            transform.position -= forwardCopy;
+            // float y = transform.position.y;
+            // transform.position = hit.point - (new Vector3(0, 0, distanceToPickableItem) + currentlyHolding.transform.localScale + transform.localScale);
+            // transform.position.Set(transform.position.x, y, transform.position.z);
+        }
+    }
+
 }
 
 

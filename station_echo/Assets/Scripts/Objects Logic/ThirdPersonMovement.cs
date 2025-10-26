@@ -22,6 +22,8 @@ public class ThirdPersonMovement : MonoBehaviour
     RaycastHit hit;
     private bool doubleJumpUsed = false;
     private Animator animator;
+    private MaterialSwapper swapper;
+    private bool wasRunning;
 
     Vector3 velocity;
 
@@ -89,6 +91,8 @@ public class ThirdPersonMovement : MonoBehaviour
     void Start()
     {
 	animator = mesh.GetComponent<Animator>();
+	swapper = mesh.GetComponentInChildren<MaterialSwapper>();
+	wasRunning = false;
     }
 
     // Update is called once per frame
@@ -125,7 +129,7 @@ public class ThirdPersonMovement : MonoBehaviour
         //Sprint
         if (InputSystem.actions.FindAction("Sprint").IsPressed())
         {
-            speed = 10f;
+	    speed = 10f;
         }
         else
         {
@@ -163,6 +167,22 @@ public class ThirdPersonMovement : MonoBehaviour
 
     private void setAnimation(float magnitude)
     {
+	bool isRunning = InputSystem.actions.FindAction("Sprint").IsPressed();
+	
+	if (isRunning != wasRunning)
+	{
+    	    wasRunning = isRunning;
+
+    	    if (isRunning)
+    	    {
+        	swapper.SetMaterial(0, "eyes_run");
+    	    }
+    	    else
+    	    {
+        	swapper.SetMaterial(0, "eyes_idle");
+    	    }
+	}
+
 	if(IsGrounded())
 	{
 	    animator.SetBool("isInAir", false);

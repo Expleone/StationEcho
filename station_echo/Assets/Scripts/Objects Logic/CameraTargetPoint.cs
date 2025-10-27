@@ -1,4 +1,5 @@
 using UnityEngine;
+using Unity.Cinemachine;
 
 public class CameraTargetPoint : MonoBehaviour
 {
@@ -7,21 +8,46 @@ public class CameraTargetPoint : MonoBehaviour
 
     [SerializeField] private Vector3 offset = new Vector3(0, 1.5f, 0);
     public Vector3 newOffset;
-    public float smoothTime = 0.01f;
+    public float smoothTime = 5f;
     private Vector3 offsetVelocity = Vector3.zero;
 
+    private Vector3 previousOffset = Vector3.zero;
+    private GameObject parentObject;
+    private float timeSinceChange = 0f;
+    [SerializeField] private CinemachineCamera cinemachineCamera;
+    [SerializeField] private Transform playerMesh;
+    private CinemachineOrbitalFollow orbitalFollow;
     private void Start()
     {
         // Initialize the target point for the camera
         newOffset = offset;
+
+        parentObject = transform.parent.gameObject;
+        orbitalFollow = (CinemachineOrbitalFollow)cinemachineCamera.GetCinemachineComponent(CinemachineCore.Stage.Body);
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Smoothly move the offset to the new offset position using SmoothDamp
-        offset = Vector3.SmoothDamp(offset, newOffset, ref offsetVelocity, smoothTime);
 
-        transform.position = transform.parent.position + offset;
+        if (Vector3.Dot(newOffset, Physics.gravity.normalized) > 0)
+        {
+            previousOffset = newOffset;
+            newOffset = -offset;
+            
+            orbitalFollow.Orbits.Top.Height = -orbitalFollow.Orbits.Top.Height;
+            orbitalFollow.Orbits.Center.Height = -orbitalFollow.Orbits.Center.Height;
+            orbitalFollow.Orbits.Bottom.Height = -orbitalFollow.Orbits.Bottom.Height;
+            timeSinceChange = 0f;
+
+            parentObject.transform.Rotate(Vector3.forward, 180f);
+
+            
+        }
+
+        timeSinceChange += Time.deltaTime;
+        
+        offset = Vector3.Lerp(previousOffset, newOffset, timeSinceChange / smoothTime);
+        transform.position = parentObject.transform.position + offset;
     }
 }

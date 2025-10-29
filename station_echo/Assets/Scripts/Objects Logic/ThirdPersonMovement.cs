@@ -111,8 +111,6 @@ public class ThirdPersonMovement : MonoBehaviour
 
         Vector3 up = -Physics.gravity.normalized;
 
-        //Vector3 targetOffset = -Physics.gravity.normalized * cameraTargetPoint.newOffset.magnitude;
-        cameraTargetPoint.newOffset = -Physics.gravity.normalized * cameraTargetPoint.newOffset.magnitude;
 
         Vector3 right = Vector3.Cross(Vector3.forward, up).normalized;
         Vector3 forward = Vector3.Cross(up, right).normalized;
@@ -148,6 +146,10 @@ public class ThirdPersonMovement : MonoBehaviour
         }
 
         controller.Move(velocity * Time.deltaTime);
+
+	if(InputSystem.actions.FindAction("Attack").IsPressed()){
+		Cursor.visible = !Cursor.visible;
+	}
 
         setAnimation(moveDirection.magnitude);
     }

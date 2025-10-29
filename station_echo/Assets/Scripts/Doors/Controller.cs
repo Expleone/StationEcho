@@ -128,11 +128,13 @@ public class DoorController : MonoBehaviour
 	     gravityStatePast = Physics.gravity;
              Physics.gravity = GravityChangerDirection;
              gravityChanged = true;
+	     Debug.Log("true");
          }
          else if (!shouldChange && gravityChanged)
          {
              Physics.gravity = gravityStatePast;
              gravityChanged = false;
+	     Debug.Log("false");
          }
     }
 }

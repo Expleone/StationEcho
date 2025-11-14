@@ -14,6 +14,12 @@ public class PlatformLogic : MonoBehaviour
     private bool moving = false;
     private float currentWaitTime = 0;
     private Vector3 linearVelocity = new Vector3(0, 0, 0);
+
+    private Vector3 currentMovement = new Vector3(0, 0, 0);
+    public Vector3 GetPropagationMovement()
+    {
+        return currentMovement;
+    }
     public List<GameObject> passengers = new List<GameObject>();
 
     void Start()
@@ -40,7 +46,7 @@ public class PlatformLogic : MonoBehaviour
     }
 
 
-    void Update()
+    void FixedUpdate()
     {
         if (waypointCount > 0 && !moving)
         {
@@ -49,7 +55,7 @@ public class PlatformLogic : MonoBehaviour
                 currentWaitTime = 0;
                 calculateNewLinVel();
             }
-            else currentWaitTime += Time.deltaTime;
+            else currentWaitTime += Time.fixedDeltaTime;
         }
         else
         {
@@ -58,11 +64,14 @@ public class PlatformLogic : MonoBehaviour
                 platformObjectTransform.localPosition = waypointTransforms[currentWaypoint].localPosition;
                 moving = false;
                 linearVelocity = new Vector3(0, 0, 0);
+                currentMovement = new Vector3(0, 0, 0);
+
                 currentWaypoint = currentWaypoint + 1 >= waypointCount ? 0 : currentWaypoint + 1;
             }
             else
             {
-                platformObjectTransform.localPosition += linearVelocity * speed * Time.deltaTime;
+                currentMovement = linearVelocity * speed * Time.fixedDeltaTime;
+                platformObjectTransform.localPosition += currentMovement;
                 managePassengers();
             }
         }
@@ -72,7 +81,7 @@ public class PlatformLogic : MonoBehaviour
     {
         foreach(GameObject gameObject in passengers)
         {
-            gameObject.transform.position += linearVelocity * speed * Time.deltaTime;
+            gameObject.transform.position += linearVelocity * speed * Time.fixedDeltaTime;
         }
     }
 
@@ -91,8 +100,8 @@ public class PlatformLogic : MonoBehaviour
     {
         Vector3 a = waypointTransforms[currentWaypoint].localPosition;
 
-        Vector3 min = a - speed * linearVelocity * Time.deltaTime;
-        Vector3 max = a + speed * linearVelocity * Time.deltaTime;
+        Vector3 min = a - speed * linearVelocity * Time.fixedDeltaTime;
+        Vector3 max = a + speed * linearVelocity * Time.fixedDeltaTime;
         if (min.x > max.x)
         {
             float i = max.x;

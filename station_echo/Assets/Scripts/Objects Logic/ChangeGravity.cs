@@ -29,12 +29,10 @@ public class ChangeGravity : MonoBehaviour
 
         
 
-        cameraTargetPoint = other.GetComponentInChildren<CameraTargetPoint>();
         playerTransform = other.transform;
 
         Physics.gravity = Physics.gravity * -1f;
-        cameraTargetPoint.newOffset = -Physics.gravity.normalized * cameraTargetPoint.newOffset.magnitude;
 
-        playerTransform.Rotate(Vector3.forward, 180f);
+        // playerTransform.Rotate(Vector3.forward, 180f);
     }
 }

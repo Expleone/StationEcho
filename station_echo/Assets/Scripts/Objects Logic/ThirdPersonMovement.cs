@@ -136,7 +136,7 @@ public class ThirdPersonMovement : MonoBehaviour
     }
 
 
-    void Start()
+    void Awake()
     {
         animator = mesh.GetComponent<Animator>();
         swapper = mesh.GetComponentInChildren<MaterialSwapper>();

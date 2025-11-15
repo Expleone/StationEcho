@@ -12,9 +12,9 @@ public class PlatformLogic : MonoBehaviour
     private int waypointCount = 0;
     private int currentWaypoint = 0;
     private bool moving = false;
+    public bool allowedToMove = true;
     private float currentWaitTime = 0;
     private Vector3 linearVelocity = new Vector3(0, 0, 0);
-
     private Vector3 currentMovement = new Vector3(0, 0, 0);
     public Vector3 GetPropagationMovement()
     {
@@ -34,6 +34,12 @@ public class PlatformLogic : MonoBehaviour
         for (int i = 1; i < transform.childCount; ++i)
         {
             waypointTransforms.Add(transform.GetChild(i));
+            // Disable mesh renderer of waypoints
+            Renderer renderer = transform.GetChild(i).GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                renderer.enabled = false;
+            }
         }
         if (waypointTransforms.Count > 0)
         {
@@ -46,12 +52,32 @@ public class PlatformLogic : MonoBehaviour
     }
 
 
+    private void OnDrawGizmos()
+    {
+        //Only draw in the editor
+        if (Application.isEditor) 
+        {
+            Gizmos.color = Color.red; 
+
+            for(int i = 0; i < waypointTransforms.Count; ++i)
+            {
+                Gizmos.DrawWireCube(waypointTransforms[i].position, platformObjectTransform.localScale);
+            }
+        }
+    }
+
+
     void FixedUpdate()
     {
         if (waypointCount > 0 && !moving)
         {
             if (currentWaitTime >= waitingTime)
             {
+                if (!allowedToMove)
+                {
+                    currentMovement = Vector3.zero;
+                    return;
+                } 
                 currentWaitTime = 0;
                 calculateNewLinVel();
             }
@@ -59,6 +85,11 @@ public class PlatformLogic : MonoBehaviour
         }
         else
         {
+            if (!allowedToMove)
+            {
+                currentMovement = Vector3.zero;
+                return;
+            } 
             if (hasArrived())  //Check if the platform has reached the waypoint
             {
                 platformObjectTransform.localPosition = waypointTransforms[currentWaypoint].localPosition;
@@ -72,19 +103,10 @@ public class PlatformLogic : MonoBehaviour
             {
                 currentMovement = linearVelocity * speed * Time.fixedDeltaTime;
                 platformObjectTransform.localPosition += currentMovement;
-                managePassengers();
             }
         }
     }
     
-    private void managePassengers()
-    {
-        foreach(GameObject gameObject in passengers)
-        {
-            gameObject.transform.position += linearVelocity * speed * Time.fixedDeltaTime;
-        }
-    }
-
 
     private void calculateNewLinVel()
     {

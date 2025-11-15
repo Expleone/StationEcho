@@ -52,6 +52,11 @@ public class ThirdPersonMovement : MonoBehaviour
         return groundHit;
     }
 
+    public void SetIsDoubleJumpUsed(bool used)
+    {
+        doubleJumpUsed = used;
+    }
+
 
 
     bool IsGrounded()

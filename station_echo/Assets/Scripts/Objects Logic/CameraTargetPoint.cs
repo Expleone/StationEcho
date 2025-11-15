@@ -40,9 +40,12 @@ public class CameraTargetPoint : MonoBehaviour
             orbitalFollow.Orbits.Bottom.Height = -orbitalFollow.Orbits.Bottom.Height;
             timeSinceChange = 0f;
 
-            parentObject.transform.Rotate(Vector3.forward, 180f);
-
-            
+            playerMesh.Rotate(Vector3.forward, 180f);
+            ThirdPersonMovement movement = parentObject.GetComponent<ThirdPersonMovement>();
+            if (movement != null && movement.GetGroundHit().collider != null)
+            {
+                movement.SetIsDoubleJumpUsed(false);
+            }
         }
 
         timeSinceChange += Time.deltaTime;

@@ -32,8 +32,9 @@ public class CameraTargetPoint : MonoBehaviour
 
         if (Vector3.Dot(newOffset, Physics.gravity.normalized) > 0)
         {
+            
             previousOffset = newOffset;
-            newOffset = -offset;
+            newOffset = -previousOffset;
             
             orbitalFollow.Orbits.Top.Height = -orbitalFollow.Orbits.Top.Height;
             orbitalFollow.Orbits.Center.Height = -orbitalFollow.Orbits.Center.Height;

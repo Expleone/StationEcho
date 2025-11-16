@@ -42,27 +42,13 @@ public class PlatformLogic : MonoBehaviour
             }
         }
         if (waypointTransforms.Count > 0)
-        {
-            GameObject spawned = Instantiate(waypointPrefab, Vector3.zero, Quaternion.identity, transform); //Cretae a waypoint on the platform's local position
+        {   //Create a waypoint on the platform's local position
+            GameObject spawned = Instantiate(waypointPrefab, Vector3.zero, Quaternion.identity, transform); 
             spawned.transform.localPosition = platformObjectTransform.localPosition;
+            spawned.GetComponent<AdvancedWaypointGizmos>().platformObjectTransform = platformObjectTransform;
 
             waypointTransforms.Add(spawned.transform);
             waypointCount = transform.childCount - 1;
-        }
-    }
-
-
-    private void OnDrawGizmos()
-    {
-        //Only draw in the editor
-        if (Application.isEditor) 
-        {
-            Gizmos.color = Color.red; 
-
-            for(int i = 0; i < waypointTransforms.Count; ++i)
-            {
-                Gizmos.DrawWireCube(waypointTransforms[i].position, platformObjectTransform.localScale);
-            }
         }
     }
 
@@ -90,7 +76,7 @@ public class PlatformLogic : MonoBehaviour
                 currentMovement = Vector3.zero;
                 return;
             } 
-            if (hasArrived())  //Check if the platform has reached the waypoint
+            else if (hasArrived())  //Check if the platform has reached the waypoint
             {
                 platformObjectTransform.localPosition = waypointTransforms[currentWaypoint].localPosition;
                 moving = false;

@@ -22,6 +22,8 @@ public class ThirdPersonMovement : MonoBehaviour
     public LayerMask groundMask;
     private bool isHit;
     private bool isGrounded;
+
+    bool wasMaterialChanged = false;
     RaycastHit groundHit;
     RaycastHit previousGroundHit;
 
@@ -34,6 +36,12 @@ public class ThirdPersonMovement : MonoBehaviour
     private MaterialSwapper swapper;
     private bool wasRunning;
     Vector3 verticalVelocity;
+
+    private Vector2 _direction2d;
+    private bool _sprintHeld;
+    private bool _jumpTriggered;
+
+    private MoveableObject moveableObject;
 
     float fallingTime = 0f;
 
@@ -141,8 +149,12 @@ public class ThirdPersonMovement : MonoBehaviour
     }
 
 
-    void Start()
+
+    void Awake()
     {
+        controller = GetComponent<CharacterController>();
+        moveableObject = GetComponent<MoveableObject>();
+
         animator = mesh.GetComponent<Animator>();
         swapper = mesh.GetComponentInChildren<MaterialSwapper>();
         wasRunning = false;
@@ -153,118 +165,118 @@ public class ThirdPersonMovement : MonoBehaviour
         }
     }
 
+    
+        
+        
+
     // Update is called once per frame
     void Update()
     {
+        
+        _direction2d = InputSystem.actions.FindAction("Move").ReadValue<Vector2>();
+        _sprintHeld = InputSystem.actions.FindAction("Sprint").IsPressed();
 
-        Vector2 direction2d = InputSystem.actions.FindAction("Move").ReadValue<Vector2>();
-        Vector3 direction = new Vector3(direction2d.x, 0f, direction2d.y).normalized;
+        
+        if (InputSystem.actions.FindAction("Jump").triggered)
+        {
+            _jumpTriggered = true;
+        }
 
-        Vector3 velocity = Vector3.zero;
+        if (InputSystem.actions.FindAction("Attack").IsPressed())
+        {
+            Cursor.visible = !Cursor.visible;
+        }
+    }
+
+    void FixedUpdate()
+    {
+        Vector3 platformDelta = moveableObject.GetPropagationMovement();
 
         isGrounded = IsGrounded();
-
-        // Apply gravity
+        
+        
         if (isGrounded && Vector3.Dot(verticalVelocity, Physics.gravity.normalized) > 0)
         {
-            verticalVelocity = Physics.gravity / 3f; // Small value to keep grounded
+            verticalVelocity = Physics.gravity / 3f; 
             doubleJumpUsed = false;
             fallingTime = 0f;
         }
 
-
-
-        // Jump
-        if (InputSystem.actions.FindAction("Jump").triggered && isGrounded)
+        if (_jumpTriggered)
         {
-            verticalVelocity = -Physics.gravity.normalized * jumpSpeed;
-	        animator.SetTrigger("jump");
-        }
-        else if (InputSystem.actions.FindAction("Jump").triggered && !isGrounded && !doubleJumpUsed)
-        {
-            verticalVelocity = -jumpSpeed * Physics.gravity.normalized;
-            doubleJumpUsed = true;
-        }
-
-
-        //Sprint
-        if (InputSystem.actions.FindAction("Sprint").IsPressed())
-        {
-            speed = 10f;
-        }
-        else
-        {
-            speed = 6f;
+            if (isGrounded)
+            {
+                verticalVelocity = -Physics.gravity.normalized * jumpSpeed;
+                animator.SetTrigger("jump");
+            }
+            else if (!isGrounded && !doubleJumpUsed)
+            {
+                verticalVelocity = -jumpSpeed * Physics.gravity.normalized;
+                doubleJumpUsed = true;
+            }
+            _jumpTriggered = false;
         }
 
-
-
+        
         if (!isGrounded)
         {
-            fallingTime += Time.deltaTime;
-            verticalVelocity += Physics.gravity * Time.deltaTime;
+            fallingTime += Time.fixedDeltaTime; 
+            verticalVelocity += Physics.gravity * Time.fixedDeltaTime; 
         }
-       
-        // Apply vertical movement (gravity and jump)
+
+        
         if (Vector3.Dot(verticalVelocity, Physics.gravity) < 0 && !canMoveUpwards())
         {
             verticalVelocity = Vector3.zero;
         }
-        // print(verticalVelocity);
-        //controller.Move(verticalVelocity * Time.deltaTime);
-        velocity += verticalVelocity * Time.deltaTime;
+
+        Vector3 verticalDelta = verticalVelocity * Time.fixedDeltaTime;
+
+
+        Vector3 direction = new Vector3(_direction2d.x, 0f, _direction2d.y).normalized;
+        Vector3 horizontalDelta = Vector3.zero;
 
         
-
+        float currentSpeed = _sprintHeld ? 10f : 6f;
 
         if (direction.magnitude >= 0.1f)
         {
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
 
-            // Preserve the current X and Z rotation, only update Y rotation
             Vector3 currentRotation = transform.eulerAngles;
             transform.rotation = Quaternion.Euler(currentRotation.x, angle, currentRotation.z);
 
-
-            float inAirCorrection = 1f;
-            if (!isGrounded)
-            {
-                inAirCorrection = 0.5f;
-            }
+            float inAirCorrection = isGrounded ? 1f : 0.5f;
+            
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            velocity += moveDir * (speed * Time.deltaTime * inAirCorrection);
+            horizontalDelta = moveDir * (currentSpeed * Time.fixedDeltaTime * inAirCorrection);
         }
-        controller.Move(velocity);
 
-        // print(velocity);
-        if(InputSystem.actions.FindAction("Attack").IsPressed()){
-            Cursor.visible = !Cursor.visible;
-        }
-        setAnimation(direction.magnitude);
+        
+        Vector3 finalDelta = horizontalDelta + verticalDelta + platformDelta;
+        controller.Move(finalDelta);
+
+        setAnimation(direction.magnitude, _sprintHeld);
     }
-
-    private void setAnimation(float magnitude)
+    private void setAnimation(float magnitude, bool isRunning)
     {
-        bool isRunning = InputSystem.actions.FindAction("Sprint").IsPressed();
-
-        if (isRunning != wasRunning)
-        {
-            print("Changing eye material");
-            wasRunning = isRunning;
-            if (isRunning)
-            {
+        if (isRunning && magnitude >= 0.1f){
+            if(wasMaterialChanged == false){
                 swapper.SetMaterial(0, "eyes_run");
-            }
-            else
-            {
-                swapper.SetMaterial(0, "eyes_idle");
+                wasMaterialChanged = true;
             }
         }
-        if(!isGrounded && fallingTime > 0.2f)
+        else{
+            swapper.SetMaterial(0, "eyes_idle");
+            wasMaterialChanged = false;
+        }
+
+        if (!isGrounded && fallingTime > 0.2f)
         {
             animator.SetBool("isInAir", true);
-        }else
+        }
+        else
         {
             animator.SetBool("isInAir", false);
         }
@@ -272,7 +284,7 @@ public class ThirdPersonMovement : MonoBehaviour
         float animationSpeed = 0f;
         if (magnitude >= 0.1f)
         {
-            animationSpeed = InputSystem.actions.FindAction("Sprint").IsPressed() ? 2f : 1f;
+            animationSpeed = isRunning ? 2f : 1f;
         }
         animator.SetFloat("Speed", animationSpeed);
     }

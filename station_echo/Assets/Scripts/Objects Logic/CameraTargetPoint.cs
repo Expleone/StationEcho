@@ -27,7 +27,7 @@ public class CameraTargetPoint : MonoBehaviour
     }
 
     // Update is called once per frame
-    void LateUpdate()
+    void FixedUpdate()
     {
 
         if (Vector3.Dot(newOffset, Physics.gravity.normalized) > 0)

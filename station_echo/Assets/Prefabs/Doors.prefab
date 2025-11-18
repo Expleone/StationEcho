@@ -78,7 +78,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a298470269db5384cab7ae0c6489788a,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1370243597394615900}
+      addedObject: {fileID: 4480560801758405669}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a298470269db5384cab7ae0c6489788a,
         type: 3}
       insertIndex: -1
@@ -96,7 +96,7 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 5947934973704883383}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1370243597394615900
+--- !u!114 &4480560801758405669
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -105,11 +105,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 6794285360693146086}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50f8f61bfb93c2145a00fc5ed06836e6, type: 3}
+  m_Script: {fileID: 11500000, guid: 706f82ac71874344eb256053909dc36b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoorController
+  whatToDo: 0
+  activationMode: 1
+  GravityChangerDirection: {x: 0, y: 1, z: 0}
   doors: []
-  keys: []
+  platforms: []
+  plates: []
+  switches: []
+  buttons: []
 --- !u!64 &4968947116904268562
 MeshCollider:
   m_ObjectHideFlags: 0

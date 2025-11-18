@@ -1,7 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
 
-
 enum ObjectType
 {
     Platform,
@@ -9,51 +8,43 @@ enum ObjectType
     Unpickable,
     Player
 }
+
 public class MoveableObject : MonoBehaviour
 {
     Vector3 propagationMovement;
-    bool propagate=true;
+    bool propagate = true;
     ObjectType objectType;
 
     PlatformLogic platformLogic;
-
     ThirdPersonMovement thirdPersonMovement;
 
     [SerializeField] LayerMask groundMask;
     RaycastHit groundHit;
-
     Rigidbody rb;
-
 
     public Vector3 GetPropagationMovement()
     {
         if (propagate)
         {
-            
-            return propagationMovement;  
-        } 
+            return propagationMovement;
+        }
         return Vector3.zero;
     }
+
     bool CheckGround()
     {
-        // Get the gravity direction (normalized)
         Vector3 castDirection = Physics.gravity.normalized;
         float groundCheckDistance = transform.localScale.y / 2f + 0.1f;
         Vector3 castOrigin = transform.position;
-
-
-        // Perform the raycast
         bool isHit = Physics.Raycast(castOrigin, castDirection, out groundHit, groundCheckDistance, groundMask);
-
         return isHit;
-
     }
 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        rb = this.gameObject.GetComponent<Rigidbody>(); // Get this once
         objectType = GetObjectType(this.gameObject);
+
         if (objectType == ObjectType.Platform)
         {
             platformLogic = this.gameObject.GetComponentInParent<PlatformLogic>();
@@ -65,12 +56,11 @@ public class MoveableObject : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (objectType == ObjectType.Platform)
         {
-            propagationMovement = platformLogic.GetPropagationMovement()/ Time.fixedDeltaTime;
+            propagationMovement = platformLogic.GetPropagationMovement(); 
         }
 
         if (objectType == ObjectType.Player)
@@ -85,19 +75,24 @@ public class MoveableObject : MonoBehaviour
                 }
                 else
                 {
-                    propagationMovement = new Vector3(0, 0, 0);
+                    propagationMovement = Vector3.zero;
                 }
             }
-            Debug.Log("Player propagation movement: " + propagationMovement);
-            thirdPersonMovement.Move(propagationMovement * Time.deltaTime);
-        }
 
-        if (objectType == ObjectType.Pickable)
+            if (propagationMovement != Vector3.zero)
+            {
+                thirdPersonMovement.Move(propagationMovement);
+            }
+        }
+        else if (objectType == ObjectType.Pickable)
         {
-            if (this.transform.parent != null && this.transform.parent.GetComponent<ThirdPersonMovement>() != null){
-                propagationMovement = this.transform.parent.GetComponent<ThirdPersonMovement>().GetMovement();
+            if (this.transform.parent != null && this.transform.parent.GetComponent<ThirdPersonMovement>() != null)
+            {
+                propagationMovement = this.transform.parent.GetComponent<ThirdPersonMovement>().GetMovement() * Time.fixedDeltaTime;
                 propagate = false;
-            } else {
+            }
+            else
+            {
                 propagate = true;
                 if (CheckGround())
                 {
@@ -108,14 +103,12 @@ public class MoveableObject : MonoBehaviour
                     }
                     else
                     {
-                        propagationMovement = new Vector3(0, 0, 0);
+                        propagationMovement = Vector3.zero;
                     }
                 }
-                
             }
         }
-
-        if (objectType == ObjectType.Unpickable)
+        else if (objectType == ObjectType.Unpickable)
         {
             if (CheckGround())
             {
@@ -126,23 +119,22 @@ public class MoveableObject : MonoBehaviour
                 }
                 else
                 {
-                    propagationMovement = new Vector3(0, 0, 0);
+                    propagationMovement = Vector3.zero;
                 }
             }
         }
-    }
 
-    void FixedUpdate()
-    {
         if (objectType != ObjectType.Player && objectType != ObjectType.Platform)
         {
-            rb = this.gameObject.GetComponent<Rigidbody>();
-            if(propagate) rb.MovePosition(rb.position + propagationMovement * Time.fixedDeltaTime);
+            if (propagate && rb != null && propagationMovement != Vector3.zero)
+            {
+                rb.MovePosition(rb.position + propagationMovement);
+            }
         }
     }
-    
     ObjectType GetObjectType(GameObject obj)
     {
+
         if (obj.GetComponent<ThirdPersonMovement>() != null)
         {
             return ObjectType.Player;
@@ -159,5 +151,6 @@ public class MoveableObject : MonoBehaviour
         {
             return ObjectType.Unpickable;
         }
+
     }
 }

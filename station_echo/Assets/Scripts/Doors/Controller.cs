@@ -5,16 +5,15 @@ public class DoorController : MonoBehaviour
 {
     public enum WhatToDoOptions
     {
-        OPEN_DOORS,
-        CHANGE_GRAVITY,
-        ACTIVATE_PLATFORM,
+	OPEN_DOORS,
+	CHANGE_GRAVITY
     }
 
     public enum ActivationMode
     {
         AND,
         OR,
-	    XOR,
+	XOR
     }
 
     [Header("Activation Settings")]
@@ -24,34 +23,26 @@ public class DoorController : MonoBehaviour
 
     [Header("Controlled Elements")]
     public List<Door> doors;
-    public List<PlatformLogic> platforms;
     public List<PressurePlate> plates;
     public List<Switch> switches;
     public List<Button> buttons;
 
     private Vector3 gravityStatePast;
 
-    private void Start()
+    private void Awake()
     {
-        if(whatToDo == WhatToDoOptions.OPEN_DOORS)              doors = new List<Door>(GetComponentsInChildren<Door>());
-        else if(whatToDo == WhatToDoOptions.ACTIVATE_PLATFORM)  platforms = new List<PlatformLogic>(GetComponentsInChildren<PlatformLogic>());
-        else if(whatToDo == WhatToDoOptions.CHANGE_GRAVITY)     gravityStatePast = Physics.gravity;
-
+	if(whatToDo == WhatToDoOptions.OPEN_DOORS) doors = new List<Door>(GetComponentsInChildren<Door>());
+	if(whatToDo == WhatToDoOptions.CHANGE_GRAVITY) gravityStatePast = Physics.gravity;
         plates = new List<PressurePlate>(GetComponentsInChildren<PressurePlate>());
         switches = new List<Switch>(GetComponentsInChildren<Switch>());
         buttons = new List<Button>(GetComponentsInChildren<Button>());
-
-        foreach(var platform in platforms)
-        {
-            platform.allowedToMove = false;
-        }
     }
 
     private void Update()
     {
         bool allActive = true;
         bool anyActive = false;
-	    bool moreThanOneActive = false;
+	bool moreThanOneActive = false;
 
         foreach (var plate in plates)
         {
@@ -94,71 +85,56 @@ public class DoorController : MonoBehaviour
 
 	
         bool flag = false; //shows whether we will open doors or change gravity
-        switch(activationMode)
-        {
-            case ActivationMode.OR : flag = anyActive; 
-            break;
+	switch(activationMode)
+	{
+	    case ActivationMode.OR : flag = anyActive; 
+	    break;
 
-            case ActivationMode.AND : flag = allActive;
-            break;
+	    case ActivationMode.AND : flag = allActive;
+	    break;
 
-            case ActivationMode.XOR : flag = !(moreThanOneActive || !anyActive);
-            break;
-        }
+	    case ActivationMode.XOR : flag = !(moreThanOneActive || !anyActive);
+	    break;
+	}
 
-        switch(whatToDo)
-        {
-            case WhatToDoOptions.OPEN_DOORS :
-                foreach (var door in doors)
-                {
-                    if (flag)
-                    {
-                        if (!door.IsOpen) door.Open();
-                    }
-                    else
-                    {
-                        if (door.IsOpen) door.Close();
-                    }
-                }
-            break;
-            
-            case WhatToDoOptions.CHANGE_GRAVITY :
-            changeGravity(flag);
-            break;
-
-            // Platforms
-            case WhatToDoOptions.ACTIVATE_PLATFORM :
-                foreach (var platform in platforms)
-                {
-                    if (flag)
-                    {
-                        if (!platform.allowedToMove) platform.allowedToMove = true;
-                    }
-                    else
-                    {
-                        if (platform.allowedToMove) platform.allowedToMove = false;
-                    }
-                }
-            break;
-        }
+	switch(whatToDo)
+	{
+	     case WhatToDoOptions.OPEN_DOORS :
+        	foreach (var door in doors)
+        	{
+        	    if (flag)
+        	    {
+        	        if (!door.IsOpen) door.Open();
+        	    }
+        	    else
+        	    {
+        	        if (door.IsOpen) door.Close();
+        	    }
+        	}
+		break;
+	    
+	    case WhatToDoOptions.CHANGE_GRAVITY :
+		changeGravity(flag);
+		break;
+	}
     }
 
     private bool gravityChanged = false;
 
     private void changeGravity(bool shouldChange)
     {
-        if (shouldChange && !gravityChanged)
-        {
-            gravityStatePast = Physics.gravity;
-            Physics.gravity = GravityChangerDirection;
-            gravityChanged = true;
-            Debug.Log("true");
-        }
-        else if (!shouldChange && gravityChanged)
-        {
-            Physics.gravity = gravityStatePast;
-            gravityChanged = false;
-            Debug.Log("false");
-        }
+         if (shouldChange && !gravityChanged)
+         {
+	     gravityStatePast = Physics.gravity;
+             Physics.gravity = GravityChangerDirection;
+             gravityChanged = true;
+	     Debug.Log("true");
+         }
+         else if (!shouldChange && gravityChanged)
+         {
+             Physics.gravity = gravityStatePast;
+             gravityChanged = false;
+	     Debug.Log("false");
+         }
     }
 }

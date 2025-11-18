@@ -32,17 +32,21 @@ public class CameraTargetPoint : MonoBehaviour
 
         if (Vector3.Dot(newOffset, Physics.gravity.normalized) > 0)
         {
+            
             previousOffset = newOffset;
-            newOffset = -offset;
+            newOffset = -previousOffset;
             
             orbitalFollow.Orbits.Top.Height = -orbitalFollow.Orbits.Top.Height;
             orbitalFollow.Orbits.Center.Height = -orbitalFollow.Orbits.Center.Height;
             orbitalFollow.Orbits.Bottom.Height = -orbitalFollow.Orbits.Bottom.Height;
             timeSinceChange = 0f;
 
-            parentObject.transform.Rotate(Vector3.forward, 180f);
-
-            
+            playerMesh.Rotate(Vector3.forward, 180f);
+            ThirdPersonMovement movement = parentObject.GetComponent<ThirdPersonMovement>();
+            if (movement != null && movement.GetGroundHit().collider != null)
+            {
+                movement.SetIsDoubleJumpUsed(false);
+            }
         }
 
         timeSinceChange += Time.deltaTime;

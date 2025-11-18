@@ -12,7 +12,7 @@ public class PlayerInteractionLogic : MonoBehaviour
     public List<GameObject> unavailableInteractions = new List<GameObject>();
     private GameObject currentlyHolding = null;
 
-    void Start()
+    void Awake()
     {
     
     }
@@ -26,9 +26,11 @@ public class PlayerInteractionLogic : MonoBehaviour
 
             currentlyHolding.transform.SetParent(transform);
             Rigidbody otherRigidbody = currentlyHolding.GetComponent<Rigidbody>();
+            Collider otherCollider = currentlyHolding.GetComponent<Collider>();
             if (otherRigidbody != null)
             {
                 otherRigidbody.isKinematic = true;
+                otherCollider.enabled = false;
             }
             currentlyHolding.transform.localPosition = new Vector3(0, 0, transform.localScale.z + 0.1f);
             currentlyHolding.transform.localRotation = new UnityEngine.Quaternion(0, 0, 0, 0);
@@ -38,9 +40,11 @@ public class PlayerInteractionLogic : MonoBehaviour
         {
             currentlyHolding.transform.SetParent(null);
             Rigidbody otherRigidbody = currentlyHolding.GetComponent<Rigidbody>();
+            Collider otherCollider = currentlyHolding.GetComponent<Collider>();
             if (otherRigidbody != null)
             {
                 otherRigidbody.isKinematic = false;
+                otherCollider.enabled = true;
             }
 
             currentlyHolding = null;
@@ -48,7 +52,8 @@ public class PlayerInteractionLogic : MonoBehaviour
 
         if (currentlyHolding)
         {
-            CheckCollisionWithWalls();
+            /* Turned it off to check smth */
+            //CheckCollisionWithWalls();
         }
     }
     

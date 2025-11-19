@@ -1,5 +1,8 @@
 using UnityEngine;
+
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 [ExecuteInEditMode]
 public class ObjectLabel : MonoBehaviour
@@ -9,6 +12,7 @@ public class ObjectLabel : MonoBehaviour
     public Vector3 labelOffset = new Vector3(0, 2f, 0);
 }
 
+#if UNITY_EDITOR
 [CustomEditor(typeof(ObjectLabel))]
 public class ObjectLabelEditor : Editor
 {
@@ -28,3 +32,4 @@ public class ObjectLabelEditor : Editor
         );
     }
 }
+#endif

@@ -51,11 +51,20 @@ public class GameManager : MonoBehaviour
     private void PauseGame()
     {
         Time.timeScale = 0f;
+
+        Cursor.lockState = CursorLockMode.None;
+
+        // Hides the cursor
+        Cursor.visible = true;
     }
 
     private void ResumeGame()
     {
         Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
+
+        // Hides the cursor
+        Cursor.visible = false;
     }
 
     public void SetMenuState() { UpdateGameState(GameState.Menu); }

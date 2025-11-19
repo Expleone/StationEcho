@@ -6,8 +6,9 @@ public class Door : MonoBehaviour
     public bool IsLocked = false;
     public bool IsOpen = false;
     public float Speed = 1f;
+    public float SlideDistance = 2f;
     public Vector3 SlideDirection = Vector3.left;
-    private float SlideAmount = 3f;
+
     private Vector3 StartPosition;
     private Vector3 TargetPosition;
     private Coroutine AnimationCoroutine;
@@ -15,8 +16,7 @@ public class Door : MonoBehaviour
     private void Awake()
     {
         StartPosition = transform.position;
-        SlideAmount = Mathf.Abs(transform.localScale.x);
-        TargetPosition = StartPosition + SlideDirection * SlideAmount;
+        TargetPosition = StartPosition + SlideDirection.normalized * SlideDistance;
     }
 
     public void Open()
@@ -44,13 +44,15 @@ public class Door : MonoBehaviour
     private IEnumerator SlideDoor(Vector3 from, Vector3 to)
     {
         float elapsed = 0f;
-        float duration = Vector3.Distance(from, to) / (Speed * SlideAmount);
+        float duration = Vector3.Distance(from, to) / Speed;
+
         while (elapsed < duration)
         {
             transform.position = Vector3.Lerp(from, to, elapsed / duration);
             elapsed += Time.deltaTime;
             yield return null;
         }
+
         transform.position = to;
     }
 }

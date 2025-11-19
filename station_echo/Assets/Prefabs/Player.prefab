@@ -31,8 +31,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1677926466068101267}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.23085709, y: 0.77943444, z: 0.41916293, w: -0.4043383}
-  m_LocalPosition: {x: 0.8241094, y: -0.9851137, z: 0.6068422}
+  m_LocalRotation: {x: -0.04482074, y: 0.87089604, z: 0.4826921, w: 0.08086764}
+  m_LocalPosition: {x: -0.18412378, y: -1, z: 0.982903}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -492,7 +492,7 @@ MonoBehaviour:
   newOffset: {x: 0, y: 0, z: 0}
   smoothTime: 2
   cinemachineCamera: {fileID: 1712080188249064983}
-  playerMesh: {fileID: 8094580799576748626}
+  playerMesh: {fileID: 4911456367078677694}
 --- !u!1 &6990248578237922844
 GameObject:
   m_ObjectHideFlags: 0

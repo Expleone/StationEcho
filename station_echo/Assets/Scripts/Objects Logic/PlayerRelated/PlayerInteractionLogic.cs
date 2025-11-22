@@ -8,9 +8,11 @@ public class PlayerInteractionLogic : MonoBehaviour
 {
     [SerializeField] public LayerMask layerMask;
     [SerializeField] public float distanceToPickableItem;
+    public Transform holdPoint; 
+    public float moveForce = 10f;
     public List<GameObject> availableInteractions = new List<GameObject>();
     public List<GameObject> unavailableInteractions = new List<GameObject>();
-    private GameObject currentlyHolding = null;
+    private Rigidbody heldRb = null;
 
     void Start()
     {
@@ -19,45 +21,61 @@ public class PlayerInteractionLogic : MonoBehaviour
 
     void Update()
     {
-        if (InputSystem.actions.FindAction("Interact").triggered && !currentlyHolding && availableInteractions.Count != 0)
+        if (InputSystem.actions.FindAction("Interact").triggered && !heldRb && availableInteractions.Count != 0)
         {
             availableInteractions.Sort(new SortByProximity(transform));
-            currentlyHolding = availableInteractions[0];
+            heldRb = availableInteractions[0].GetComponent<Rigidbody>();
 
-            currentlyHolding.transform.SetParent(transform);
-            Rigidbody otherRigidbody = currentlyHolding.GetComponent<Rigidbody>();
-            if (otherRigidbody != null)
-            {
-                otherRigidbody.isKinematic = true;
-            }
-            currentlyHolding.transform.localPosition = new Vector3(0, 0, transform.localScale.z + 0.1f);
-            currentlyHolding.transform.localRotation = new UnityEngine.Quaternion(0, 0, 0, 0);
+            //heldRb.useGravity = false;
+
+            heldRb.transform.SetParent(transform);
+            
+            heldRb.isKinematic = true;
+            //otherRigidbody.useGravity = false;
+            
+            heldRb.transform.localPosition = holdPoint.localPosition;
+            heldRb.transform.localRotation = new UnityEngine.Quaternion(0, 0, 0, 0);
         }
 
-        else if (InputSystem.actions.FindAction("Interact").triggered && currentlyHolding)
+        else if (InputSystem.actions.FindAction("Interact").triggered && heldRb)
         {
-            currentlyHolding.transform.SetParent(null);
-            Rigidbody otherRigidbody = currentlyHolding.GetComponent<Rigidbody>();
-            if (otherRigidbody != null)
-            {
-                otherRigidbody.isKinematic = false;
-            }
+            heldRb.transform.SetParent(null);
+            heldRb.isKinematic = false;
+            //heldRb.useGravity = true;
 
-            currentlyHolding = null;
-        }
+            heldRb = null;
+        }   
+    }
 
-        if (currentlyHolding)
+
+    void FixedUpdate()
+    {
+        if (heldRb)
         {
-            CheckCollisionWithWalls();
+            //MoveObjectToHand();
+            //CheckCollisionWithWalls();
         }
+    }
+
+
+    void MoveObjectToHand()
+    {
+       // 1. Get the distance to the hand
+        Vector3 direction = holdPoint.position - heldRb.position;
+        float distance = direction.magnitude;
+
+        // 2. Move it
+        // Logic: If far away, move fast. If close, slow down.
+        // The 'heldRb.drag' we set earlier prevents this from exploding.
+        heldRb.linearVelocity = direction * moveForce;
     }
     
     private void CheckCollisionWithWalls()
     {
-        float maxDistance = currentlyHolding.transform.localScale.x + distanceToPickableItem;
+        float maxDistance = heldRb.transform.localScale.x + distanceToPickableItem;
         RaycastHit hit;
 
-        if (Physics.BoxCast(transform.position, currentlyHolding.transform.localScale / 2, transform.forward, out hit,
+        if (Physics.BoxCast(transform.position, heldRb.transform.localScale / 2, transform.forward, out hit,
                              Quaternion.identity, maxDistance, layerMask))
         {
             // Debug.Log("###########");

@@ -34,12 +34,6 @@ public class PlatformLogic : MonoBehaviour
         for (int i = 1; i < transform.childCount; ++i)
         {
             waypointTransforms.Add(transform.GetChild(i));
-            // Disable mesh renderer of waypoints
-            Renderer renderer = transform.GetChild(i).GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                renderer.enabled = false;
-            }
         }
         if (waypointTransforms.Count > 0)
         {   //Create a waypoint on the platform's local position

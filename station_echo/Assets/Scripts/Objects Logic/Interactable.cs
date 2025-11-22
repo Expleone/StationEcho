@@ -7,7 +7,7 @@ public enum InteractionType
     Pressable
 };
 /// <summary>
-/// Used to determine wheather the player can interact with this object (pick it up / press it)
+/// Used to determine whether the player can interact with this object (pick it up / press it)
 /// </summary>
 public class Interactable : MonoBehaviour
 {

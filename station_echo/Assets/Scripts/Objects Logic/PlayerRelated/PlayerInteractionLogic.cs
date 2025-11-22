@@ -8,8 +8,10 @@ public class PlayerInteractionLogic : MonoBehaviour
 {
     [SerializeField] public LayerMask layerMask;
     [SerializeField] public float distanceToPickableItem;
+    public CharacterController characterController;
     public Transform holdPoint; 
-    public float moveForce = 10f;
+    public float moveForce = 20f;
+    public float maxDistanceToObject = 5f;
     public List<GameObject> availableInteractions = new List<GameObject>();
     public List<GameObject> unavailableInteractions = new List<GameObject>();
     private Rigidbody heldRb = null;
@@ -26,22 +28,24 @@ public class PlayerInteractionLogic : MonoBehaviour
             availableInteractions.Sort(new SortByProximity(transform));
             heldRb = availableInteractions[0].GetComponent<Rigidbody>();
 
-            //heldRb.useGravity = false;
 
-            heldRb.transform.SetParent(transform);
+            heldRb.transform.SetParent(null);
             
-            heldRb.isKinematic = true;
-            //otherRigidbody.useGravity = false;
+            //heldRb.isKinematic = true;
+            heldRb.useGravity = false;
+            heldRb.interpolation = RigidbodyInterpolation.Interpolate;
             
-            heldRb.transform.localPosition = holdPoint.localPosition;
-            heldRb.transform.localRotation = new UnityEngine.Quaternion(0, 0, 0, 0);
+            heldRb.transform.position = holdPoint.position;
+            // heldRb.transform.localRotation = new UnityEngine.Quaternion(0, 0, 0, 0);
+            //heldRb.constraints = RigidbodyConstraints.FreezeRotation;
         }
 
         else if (InputSystem.actions.FindAction("Interact").triggered && heldRb)
         {
             heldRb.transform.SetParent(null);
-            heldRb.isKinematic = false;
-            //heldRb.useGravity = true;
+            //heldRb.isKinematic = false;
+            heldRb.useGravity = true;
+            //heldRb.constraints = RigidbodyConstraints.None;
 
             heldRb = null;
         }   
@@ -52,24 +56,47 @@ public class PlayerInteractionLogic : MonoBehaviour
     {
         if (heldRb)
         {
-            //MoveObjectToHand();
+            heldRb.transform.localRotation = transform.rotation;
             //CheckCollisionWithWalls();
+            MoveObjectToHand();
         }
     }
 
 
     void MoveObjectToHand()
     {
-       // 1. Get the distance to the hand
-        Vector3 direction = holdPoint.position - heldRb.position;
-        float distance = direction.magnitude;
+       // 1. Get vector to hand
+        Vector3 directionToHand = holdPoint.position - heldRb.position;
 
-        // 2. Move it
-        // Logic: If far away, move fast. If close, slow down.
-        // The 'heldRb.drag' we set earlier prevents this from exploding.
-        heldRb.linearVelocity = direction * moveForce;
+        if(directionToHand.magnitude > maxDistanceToObject)
+        {
+            heldRb.transform.SetParent(null);
+            heldRb.useGravity = true;
+            heldRb = null;
+            return;
+        }
+        
+        // 2. Calculate the velocity needed to reach the hand in ONE physics step
+        // This is smoother than raw force because it adjusts automatically based on framerate
+        Vector3 targetVelocity = directionToHand / Time.fixedDeltaTime;
+
+        // 3. Clamp the force so it doesn't explode if you turn too fast
+        // "15" is the max speed. Lower = smoother/slower. Higher = snappier.
+        float maxSpeed = 15f; 
+        targetVelocity = Vector3.ClampMagnitude(targetVelocity, maxSpeed);
+
+        // 4. Feed Forward (Your player movement)
+        if (characterController != null)
+        {
+            targetVelocity += characterController.velocity;
+        }
+
+        // 5. Apply
+        // We use velocity directly instead of force for smoothness
+        heldRb.linearVelocity = Vector3.Lerp(heldRb.linearVelocity, targetVelocity, 0.2f);
     }
     
+
     private void CheckCollisionWithWalls()
     {
         float maxDistance = heldRb.transform.localScale.x + distanceToPickableItem;

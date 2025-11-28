@@ -27,26 +27,16 @@ public class PlayerInteractionLogic : MonoBehaviour
         {
             availableInteractions.Sort(new SortByProximity(transform));
             heldRb = availableInteractions[0].GetComponent<Rigidbody>();
-
-
             heldRb.transform.SetParent(null);
-            
-            //heldRb.isKinematic = true;
             heldRb.useGravity = false;
-            heldRb.interpolation = RigidbodyInterpolation.Interpolate;
-            
-            heldRb.transform.position = holdPoint.position;
-            // heldRb.transform.localRotation = new UnityEngine.Quaternion(0, 0, 0, 0);
-            //heldRb.constraints = RigidbodyConstraints.FreezeRotation;
+            heldRb.rotation = Quaternion.identity;
         }
 
         else if (InputSystem.actions.FindAction("Interact").triggered && heldRb)
         {
             heldRb.transform.SetParent(null);
-            //heldRb.isKinematic = false;
             heldRb.useGravity = true;
-            //heldRb.constraints = RigidbodyConstraints.None;
-
+            heldRb.linearVelocity = Vector3.zero;
             heldRb = null;
         }   
     }
@@ -56,9 +46,25 @@ public class PlayerInteractionLogic : MonoBehaviour
     {
         if (heldRb)
         {
+            DropLogic();
             heldRb.transform.localRotation = transform.rotation;
             //CheckCollisionWithWalls();
             MoveObjectToHand();
+        }
+    }
+
+
+    void DropLogic()
+    {
+        float bottomY = transform.position.y - transform.localScale.y / 2;
+        float upperY = heldRb.transform.localScale.y / 2 + heldRb.transform.position.y;
+
+        if(upperY < bottomY)
+        {
+            heldRb.transform.SetParent(null);
+            heldRb.useGravity = true;
+            heldRb.linearVelocity = Vector3.zero;
+            heldRb = null;
         }
     }
 
@@ -95,28 +101,6 @@ public class PlayerInteractionLogic : MonoBehaviour
         // We use velocity directly instead of force for smoothness
         heldRb.linearVelocity = Vector3.Lerp(heldRb.linearVelocity, targetVelocity, 0.2f);
     }
-    
-
-    private void CheckCollisionWithWalls()
-    {
-        float maxDistance = heldRb.transform.localScale.x + distanceToPickableItem;
-        RaycastHit hit;
-
-        if (Physics.BoxCast(transform.position, heldRb.transform.localScale / 2, transform.forward, out hit,
-                             Quaternion.identity, maxDistance, layerMask))
-        {
-            // Debug.Log("###########");
-            // Debug.Log("BoxCast hit: " + hit.collider.name);
-            // Debug.Log("Hit point: " + hit.point);
-            Vector3 forwardCopy = transform.forward;
-            forwardCopy *= maxDistance - hit.distance + 0.01f;
-            transform.position -= forwardCopy;
-            // float y = transform.position.y;
-            // transform.position = hit.point - (new Vector3(0, 0, distanceToPickableItem) + currentlyHolding.transform.localScale + transform.localScale);
-            // transform.position.Set(transform.position.x, y, transform.position.z);
-        }
-    }
-
 }
 
 

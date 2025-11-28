@@ -158,12 +158,6 @@ public class ThirdPersonMovement : MonoBehaviour
         animator = mesh.GetComponent<Animator>();
         swapper = mesh.GetComponentInChildren<MaterialSwapper>();
         wasRunning = false;
-
-        // I disabled it cuz the info was useless. - NAZAR
-        // if (cameraTargetPoint == null)
-        // {
-        //     Debug.LogWarning("CameraTargetPoint does not exist!");
-        // }
     }
 
     

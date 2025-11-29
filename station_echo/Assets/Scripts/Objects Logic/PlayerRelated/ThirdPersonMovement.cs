@@ -34,7 +34,7 @@ public class ThirdPersonMovement : MonoBehaviour
     private bool doubleJumpUsed = false;
     private Animator animator;
     private MaterialSwapper swapper;
-    private bool wasRunning;
+    public bool wasRunning;
     Vector3 verticalVelocity;
 
     private Vector2 _direction2d;
@@ -158,11 +158,6 @@ public class ThirdPersonMovement : MonoBehaviour
         animator = mesh.GetComponent<Animator>();
         swapper = mesh.GetComponentInChildren<MaterialSwapper>();
         wasRunning = false;
-
-        if (cameraTargetPoint == null)
-        {
-            Debug.LogWarning("CameraTargetPoint does not exist!");
-        }
     }
 
     

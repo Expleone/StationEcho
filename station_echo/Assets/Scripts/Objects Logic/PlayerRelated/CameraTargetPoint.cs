@@ -47,6 +47,20 @@ public class CameraTargetPoint : MonoBehaviour
             {
                 movement.SetIsDoubleJumpUsed(false);
             }
+
+            CinemachineInputAxisController inputAxisController = cinemachineCamera.GetComponent<CinemachineInputAxisController>();
+            if (inputAxisController != null)
+            {
+                foreach (var controller in inputAxisController.Controllers)
+                {
+                    if (controller.Name == "Look Orbit Y")
+                    {
+                        controller.Input.Gain = -controller.Input.Gain;
+                    }
+                }
+            }
+            
+            
         }
 
         timeSinceChange += Time.deltaTime;

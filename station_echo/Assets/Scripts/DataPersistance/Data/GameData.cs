@@ -1,0 +1,20 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+[System.Serializable]
+public class GameData
+{
+    public Vector3 playerPosition = new Vector3();
+    public Vector3 cameraPosition = new Vector3();
+    public Quaternion cameraRotation = new Quaternion();
+
+    public SerializableDictionary<string, Vector3> objectsPositions =
+        new SerializableDictionary<string, Vector3>();
+
+    // public SerializableDictionary<string, bool> objectsBool;
+
+    public GameData()
+    {
+
+    }
+}

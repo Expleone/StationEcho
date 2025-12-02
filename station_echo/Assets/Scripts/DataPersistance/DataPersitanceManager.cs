@@ -46,7 +46,6 @@ public class DataPersitanceManager : MonoBehaviour
     {
         if (scenesIgnore != null && scenesIgnore.Contains(scene.name))
         {
-            Debug.Log("HEREEEE");
             return;
         }
         this.dataPersistanceObjects = FindAllDataPersistanceObjects();

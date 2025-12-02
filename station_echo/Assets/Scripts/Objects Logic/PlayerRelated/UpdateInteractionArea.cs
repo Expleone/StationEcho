@@ -11,6 +11,7 @@ public class UpdateInteractionArea : MonoBehaviour
     void Update()
     {
         checkUnavailableInteractions();
+        checkAvailableInteractions();
     }
 
     private void checkUnavailableInteractions()
@@ -19,44 +20,59 @@ public class UpdateInteractionArea : MonoBehaviour
         for (int i = playerInteractionLogic.unavailableInteractions.Count - 1; i >= 0; i--)
         {
             GameObject gameObject = playerInteractionLogic.unavailableInteractions[i];
-            if (!CheckLineOfSight(gameObject))
+
+            if (gameObject.GetComponent<Interactable>().interactionType == InteractionType.Pressable)
             {
-                playerInteractionLogic.availableInteractions.Add(gameObject);
-                playerInteractionLogic.unavailableInteractions.RemoveAt(i);
+                if (!CheckLineOfSight(gameObject) && !gameObject.GetComponent<Interactable>().HasBeenInteractedWith())
+                {
+                    playerInteractionLogic.availableInteractions.Add(gameObject);
+                    playerInteractionLogic.unavailableInteractions.RemoveAt(i);
+                }
             }
+            else
+            {
+                if (!CheckLineOfSight(gameObject))
+                {
+                    playerInteractionLogic.availableInteractions.Add(gameObject);
+                    playerInteractionLogic.unavailableInteractions.RemoveAt(i);
+                }
+            }
+        }
+    }
+
+    private void checkAvailableInteractions()
+    {
+        if (playerInteractionLogic.availableInteractions.Count == 0) return;
+        for (int i = playerInteractionLogic.availableInteractions.Count - 1; i >= 0; i--)
+        {
+            GameObject gameObject = playerInteractionLogic.availableInteractions[i];
+            if (gameObject.GetComponent<Interactable>().interactionType == InteractionType.Pressable)
+            {
+                if (CheckLineOfSight(gameObject) && gameObject.GetComponent<Interactable>().HasBeenInteractedWith())
+                {
+                    playerInteractionLogic.unavailableInteractions.Add(gameObject);
+                    playerInteractionLogic.availableInteractions.RemoveAt(i);
+                }
+            }
+            else
+            {
+                if (CheckLineOfSight(gameObject))
+                {
+                    playerInteractionLogic.unavailableInteractions.Add(gameObject);
+                    playerInteractionLogic.availableInteractions.RemoveAt(i);
+                }
+            }
+           
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        print("Trigger entered: " + other.gameObject.name);
         if (!other.gameObject.GetComponent<Interactable>()) return;
-        if (other.gameObject.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)
-        {
-            PickableTriggerEnter(other);
-        }
-        else if (other.gameObject.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pressable)
-        {
-            PressableTriggerEnter(other);
-        }
-    }
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (!other.gameObject.GetComponent<Interactable>()) return;
-        if (other.gameObject.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)
-        {
-            PickableTriggerExit(other);
-        }
-         else if (other.gameObject.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pressable)
-        {
-            PressableTriggerExit(other);
-        }
-    }
-
-
-    private void PickableTriggerEnter(Collider other)
-    {
-        if (CheckLineOfSight(other.gameObject))
+        if (CheckLineOfSight(other.gameObject)
+        )
         {
             playerInteractionLogic.unavailableInteractions.Add(other.gameObject);
         }
@@ -66,24 +82,14 @@ public class UpdateInteractionArea : MonoBehaviour
         }
     }
 
-
-    private void PickableTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)
     {
+        if (!other.gameObject.GetComponent<Interactable>()) return;
+
         if (!playerInteractionLogic.availableInteractions.Remove(other.gameObject))
         {
             playerInteractionLogic.unavailableInteractions.Remove(other.gameObject);
         }
-    }
-
-    private void PressableTriggerEnter(Collider other)
-    {
-        // To Implement
-    }
-    
-
-    private void PressableTriggerExit(Collider other)
-    {
-        // To Implement
     }
 
     // false - if clear, true - not clear

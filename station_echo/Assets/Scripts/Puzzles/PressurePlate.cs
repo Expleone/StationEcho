@@ -30,6 +30,8 @@ public class PressurePlate : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.CompareTag("PlayerInteractionArea"))
+            return;
         objectsOnPlate++;
         if (!IsPressed && objectsOnPlate > 0)
         {

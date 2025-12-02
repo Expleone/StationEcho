@@ -1,4 +1,6 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
+
 
 
 public enum InteractionType
@@ -13,10 +15,27 @@ public class Interactable : MonoBehaviour
 {
     public InteractionType interactionType;
 
+    private bool haveBeenInteractedWith = false;
 
     public InteractionType GetInteractionType()
     {
         return interactionType;
+    }
+
+    public void Interact()
+    {
+        // Interaction logic would go here
+        haveBeenInteractedWith = true;
+    }
+
+    public bool HasBeenInteractedWith()
+    {
+        return haveBeenInteractedWith;
+    }
+
+    public void ResetInteraction()
+    {
+        haveBeenInteractedWith = false;
     }
 }
 

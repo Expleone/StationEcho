@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2093955341453221886}
   - component: {fileID: 5027711714954907529}
   - component: {fileID: 6220788231446904564}
+  - component: {fileID: -2022638438325001731}
   - component: {fileID: 272496646504039670}
   m_Layer: 0
   m_Name: Button
@@ -133,10 +134,26 @@ MonoBehaviour:
   PressDirection: {x: 0, y: -1, z: 0}
   PressMaterial: pressed
   BaseMaterial: base
+  DEF_MAT_PUZZLE_MARK: DEF
+  ACT_MAT_PUZZLE_MARK: ACT
   inputActions: {fileID: -944628639613478452, guid: c9457706c8a7eb174bec5379f5b614c6,
     type: 3}
   actionMapName: Player
   interactActionName: Interact
+  puzzleMarkController: {fileID: 0}
+--- !u!114 &-2022638438325001731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6421242409026515919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e1a796be20dd445aa18fc189e70adf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Interactable
+  interactionType: 1
 --- !u!114 &272496646504039670
 MonoBehaviour:
   m_ObjectHideFlags: 0

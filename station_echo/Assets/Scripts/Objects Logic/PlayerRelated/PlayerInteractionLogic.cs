@@ -23,13 +23,25 @@ public class PlayerInteractionLogic : MonoBehaviour
 
     void Update()
     {
+        if (availableInteractions.Count == 0) return;
+        availableInteractions.Sort(new SortByProximity(transform));
+        GameObject gameObject = availableInteractions[0];
+
         if (InputSystem.actions.FindAction("Interact").triggered && !heldRb && availableInteractions.Count != 0)
         {
-            availableInteractions.Sort(new SortByProximity(transform));
-            heldRb = availableInteractions[0].GetComponent<Rigidbody>();
-            heldRb.transform.SetParent(null);
-            heldRb.useGravity = false;
-            heldRb.rotation = Quaternion.identity;
+            
+            
+            if (gameObject.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)
+            {
+                heldRb = gameObject.GetComponent<Rigidbody>();
+                heldRb.transform.SetParent(null);
+                heldRb.useGravity = false;
+                heldRb.rotation = Quaternion.identity;
+            }
+            else
+            {
+                gameObject.GetComponent<Interactable>().Interact();
+            }
         }
 
         else if (InputSystem.actions.FindAction("Interact").triggered && heldRb)

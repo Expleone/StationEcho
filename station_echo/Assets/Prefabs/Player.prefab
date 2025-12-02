@@ -31,8 +31,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1677926466068101267}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.23085558, y: 0.7794358, z: 0.41916364, w: -0.40433577}
-  m_LocalPosition: {x: 0.8241056, y: -0.9851135, z: 0.6068478}
+  m_LocalRotation: {x: 0, y: 0.9508959, z: -0.30951098, w: 0}
+  m_LocalPosition: {x: 0.00000047683716, y: 3.2989373, z: 3.7066655}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -585,6 +585,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 9
+  wasRunning: 0
 --- !u!114 &645978774937072571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -601,8 +602,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 311
   distanceToPickableItem: 0
+  characterController: {fileID: 0}
   holdPoint: {fileID: 1227954357053280169}
   moveForce: 10
+  maxDistanceToObject: 5
   availableInteractions: []
   unavailableInteractions: []
 --- !u!114 &1582097795134907659
@@ -697,7 +700,7 @@ PrefabInstance:
     - target: {fileID: 8618614945141351667, guid: 5b5e23df0d3800f4395fb55f1ec84bee,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.3
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 8618614945141351667, guid: 5b5e23df0d3800f4395fb55f1ec84bee,
         type: 3}

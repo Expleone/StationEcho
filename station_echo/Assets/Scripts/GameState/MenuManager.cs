@@ -37,6 +37,7 @@ public class MenuManager : MonoBehaviour
     public void LoadGameStateMenu()
     {
         DisableMenu();
+        DataPersitanceManager.instance.SaveGame();
         SceneManager.LoadScene("Menu");
         GameManager.Instance.UpdateGameState(GameState.Menu);
     }
@@ -50,9 +51,19 @@ public class MenuManager : MonoBehaviour
     public void LoadGameStateGame(string sceneName)
     {
         DisableMenu();
-        SceneManager.LoadScene(sceneName);
         GameManager.Instance.UpdateGameState(GameState.Game);
+        SceneManager.LoadScene(sceneName);
     }
+
+    public void NewGameStateGame(string sceneName)
+    {
+        DisableMenu();
+        GameManager.Instance.UpdateGameState(GameState.Game);
+        DataPersitanceManager.instance.NewGame();
+        SceneManager.LoadScene(sceneName);
+
+    }
+
     public void SwitchGameStateToGame()
     {
         DisableMenu();

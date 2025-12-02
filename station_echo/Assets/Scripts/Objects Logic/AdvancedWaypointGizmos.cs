@@ -11,7 +11,15 @@ public class AdvancedWaypointGizmos : MonoBehaviour
 
         if (platformObjectTransform != null)
         {
-            Gizmos.DrawWireCube(transform.position, platformObjectTransform.localScale);
+            Matrix4x4 oldMatrix = Gizmos.matrix;
+            Gizmos.matrix = Matrix4x4.TRS(transform.position, platformObjectTransform.rotation, Vector3.one);
+            Gizmos.DrawWireCube(Vector3.zero, platformObjectTransform.localScale);
+            Gizmos.matrix = oldMatrix;
         }
+    }
+
+    void Awake()
+    {
+        this.transform.GetComponent<Renderer>().enabled = false;
     }
 }

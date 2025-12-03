@@ -636,6 +636,7 @@ MonoBehaviour:
   maxDistanceToObject: 5
   availableInteractions: []
   unavailableInteractions: []
+  outlineMaterial: {fileID: 2100000, guid: 701b52f1be66243b48db869c63708099, type: 2}
 --- !u!114 &1582097795134907659
 MonoBehaviour:
   m_ObjectHideFlags: 0

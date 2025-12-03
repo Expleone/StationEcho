@@ -1,25 +1,27 @@
-using UnityEngine;
+// using UnityEngine;
+// using UnityEngine.SceneManagement;
 
-public class LevelData : MonoBehaviour, IDataPersistance
-{
-    // bool isUnlocked = false;
-    void Start()
-    {
+// public class LevelData : MonoBehaviour, IDataPersistance
+// {
+//     public string levelId;
+//     public Vector3 playerPosition = new Vector3();
+//     public Vector3 cameraPosition = new Vector3();
+//     public Quaternion cameraRotation = new Quaternion();
+//     public SerializableDictionary<string, Vector3> objectsPositions = new SerializableDictionary<string, Vector3>();
 
-    }
+//     void Start()
+//     {
+//         levelId = SceneManager.GetActiveScene().ToString();
+//         Debug.Log("Scene Id: " + levelId);
+//     }
 
-    void Update()
-    {
+//     public void LoadData(GameData data, string levelId)
+//     {
 
-    }
+//     }
 
-    public void LoadData(GameData data)
-    {
+//     public void SaveData(ref GameData data, string levelId)
+//     {
 
-    }
-
-    public void SaveData(ref GameData data)
-    {
-
-    }
-}
+//     }
+// }

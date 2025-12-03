@@ -10,21 +10,21 @@ public class MovableObjectData : MonoBehaviour, IDataPersistance
         id = System.Guid.NewGuid().ToString();
     }
 
-    public void LoadData(GameData data)
+    public void LoadData(GameData data, string levelId)
     {
-        if (data.objectsPositions.TryGetValue(id, out var pos))
+        if (data.levels[levelId].objectsPositions.TryGetValue(id, out var pos))
         {
             transform.position = pos;
         }
     }
 
-    public void SaveData(ref GameData data)
+    public void SaveData(ref GameData data, string levelId)
     {
 
-        if (data.objectsPositions.ContainsKey(id))
+        if (data.levels[levelId].objectsPositions.ContainsKey(id))
         {
-            data.objectsPositions.Remove(id);
+            data.levels[levelId].objectsPositions.Remove(id);
         }
-        data.objectsPositions.Add(id, transform.position);
+        data.levels[levelId].objectsPositions.Add(id, transform.position);
     }
 }

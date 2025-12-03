@@ -62,13 +62,13 @@ public class UpdateInteractionArea : MonoBehaviour
                     playerInteractionLogic.availableInteractions.RemoveAt(i);
                 }
             }
-           
+
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        print("Trigger entered: " + other.gameObject.name);
+        // print("Trigger entered: " + other.gameObject.name);
         if (!other.gameObject.GetComponent<Interactable>()) return;
 
         if (CheckLineOfSight(other.gameObject)
@@ -93,7 +93,7 @@ public class UpdateInteractionArea : MonoBehaviour
     }
 
     // false - if clear, true - not clear
-    private bool CheckLineOfSight(GameObject targetObject) 
+    private bool CheckLineOfSight(GameObject targetObject)
     {
         Vector3 startPoint = playerInteractionLogic.transform.position;
         Vector3 endPoint = targetObject.gameObject.transform.position;
@@ -101,7 +101,7 @@ public class UpdateInteractionArea : MonoBehaviour
         Vector3 direction = (endPoint - startPoint).normalized;
         float distance = Vector3.Distance(startPoint, endPoint);
         RaycastHit hit;
-       
+
         if (Physics.Raycast(startPoint, direction, out hit, distance, playerInteractionLogic.layerMask))
         {
             if (hit.transform == targetObject.gameObject.transform)
@@ -115,7 +115,7 @@ public class UpdateInteractionArea : MonoBehaviour
         }
         else
         {
-           return false;
+            return false;
         }
     }
 }

@@ -16,7 +16,7 @@ public class GameoverZone : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            FinishGame();
+            DataPersitanceManager.instance.LoadGame();
         }
     }
 

@@ -22,12 +22,12 @@ public class Switch : MonoBehaviour
     private Vector3 visualStartPos;
     private Coroutine animationCoroutine;
     private MaterialSwapper swapper;
-    private bool playerInRange = false;
+    // private bool playerInRange = false;
     private InputAction interactAction;
 
     private Interactable interactableComponent;
 
-    public  PuzzleMarkController puzzleMarkController = null;
+    public PuzzleMarkController puzzleMarkController = null;
 
     private void Awake()
     {
@@ -68,7 +68,7 @@ public class Switch : MonoBehaviour
 
         if (puzzleMarkController)
         {
-            foreach(MaterialSwapper ms in puzzleMarkController.childObjects)
+            foreach (MaterialSwapper ms in puzzleMarkController.childObjects)
             {
                 ms.SetMaterial(0, ACT_MAT_PUZZLE_MARK);
             }
@@ -86,7 +86,7 @@ public class Switch : MonoBehaviour
 
         if (puzzleMarkController)
         {
-            foreach(MaterialSwapper ms in puzzleMarkController.childObjects)
+            foreach (MaterialSwapper ms in puzzleMarkController.childObjects)
             {
                 ms.SetMaterial(0, DEF_MAT_PUZZLE_MARK);
             }

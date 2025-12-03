@@ -37,7 +37,7 @@ public class MenuManager : MonoBehaviour
     public void LoadGameStateMenu()
     {
         DisableMenu();
-        DataPersitanceManager.instance.SaveGame();
+        // DataPersitanceManager.instance.SaveGame();
         SceneManager.LoadScene("Menu");
         GameManager.Instance.UpdateGameState(GameState.Menu);
     }

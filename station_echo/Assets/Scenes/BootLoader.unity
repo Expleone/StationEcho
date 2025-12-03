@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: def5a14b48dc4474a9aab5e1c114d784, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  intitalSceneName: TestDoors
+  intitalSceneName: Menu
   initalGameManagerState: 0
 --- !u!114 &59194542
 MonoBehaviour:
@@ -235,6 +235,7 @@ MonoBehaviour:
   scenesIgnore:
   - BootLoader
   - Menu
+  saveOnSceneUnloaded: 0
 --- !u!1 &983068592
 GameObject:
   m_ObjectHideFlags: 0

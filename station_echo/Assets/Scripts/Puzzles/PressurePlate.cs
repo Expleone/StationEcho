@@ -42,6 +42,8 @@ public class PressurePlate : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        if (other.CompareTag("PlayerInteractionArea"))
+            return;
         objectsOnPlate = Mathf.Max(0, objectsOnPlate - 1);
         if (IsPressed && objectsOnPlate == 0)
         {

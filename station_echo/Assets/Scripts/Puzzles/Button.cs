@@ -23,13 +23,14 @@ public class Button : MonoBehaviour
     private Vector3 visualStartPos;
     private Coroutine animationCoroutine;
     private MaterialSwapper swapper;
-    private bool playerInRange = false;
     private InputAction interactAction;
     private Coroutine timerCoroutine;
 
+    private Interactable interactableComponent;
+
     public  PuzzleMarkController puzzleMarkController = null;
     
-
+    private bool isResetting = false;
     private void Awake()
     {
         if (ButtonVisual == null)
@@ -37,19 +38,7 @@ public class Button : MonoBehaviour
 
         visualStartPos = ButtonVisual.localPosition;
         swapper = ButtonVisual.GetComponent<MaterialSwapper>();
-    }
-
-    private void OnEnable()
-    {
-        if (inputActions != null)
-        {
-            var map = inputActions.FindActionMap(actionMapName);
-            if (map != null)
-            {
-                interactAction = map.FindAction(interactActionName);
-                interactAction?.Enable();
-            }
-        }
+        interactableComponent = GetComponent<Interactable>();
     }
 
     private void OnDisable()
@@ -57,24 +46,12 @@ public class Button : MonoBehaviour
         interactAction?.Disable();
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
-            playerInRange = true;
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
-            playerInRange = false;
-    }
-
     private void Update()
     {
-        if (playerInRange && interactAction != null && interactAction.triggered)
+        if (interactableComponent.HasBeenInteractedWith() && !isResetting)
         {
-            if (!IsPressed)
-                Press();
+            Press();
+            isResetting = true;
         }
     }
 
@@ -122,6 +99,8 @@ public class Button : MonoBehaviour
                 ms.SetMaterial(0, DEF_MAT_PUZZLE_MARK);
             }
         }
+        interactableComponent.ResetInteraction();
+        isResetting = false;
     }
 
     private IEnumerator Move(Vector3 from, Vector3 to)

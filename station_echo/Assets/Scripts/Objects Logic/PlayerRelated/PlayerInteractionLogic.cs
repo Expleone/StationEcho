@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -15,33 +16,80 @@ public class PlayerInteractionLogic : MonoBehaviour
     public List<GameObject> availableInteractions = new List<GameObject>();
     public List<GameObject> unavailableInteractions = new List<GameObject>();
     private Rigidbody heldRb = null;
+    public Material outlineMaterial;
+    private GameObject currentPlayerInteraction = null;
     private bool heldGravityMode = false;
 
+    private Material[] originalMaterials;
     void Start()
     {
     
     }
 
     void Update()
+{
+    if (heldRb)
     {
-        if (InputSystem.actions.FindAction("Interact").triggered && !heldRb && availableInteractions.Count != 0)
+        if (currentPlayerInteraction != null)
         {
-            availableInteractions.Sort(new SortByProximity(transform));
-            heldRb = availableInteractions[0].GetComponent<Rigidbody>();
-            heldGravityMode = heldRb.useGravity;
-            heldRb.transform.SetParent(null);
-            heldRb.useGravity = false;
-            heldRb.rotation = Quaternion.identity;
+            RemoveOutline(currentPlayerInteraction.transform);
+            currentPlayerInteraction = null;
         }
-
-        else if (InputSystem.actions.FindAction("Interact").triggered && heldRb)
+        
+        if (InputSystem.actions.FindAction("Interact").triggered)
         {
+            heldGravityMode = heldRb.useGravity;
             heldRb.transform.SetParent(null);
             heldRb.useGravity = heldGravityMode;
             heldRb.linearVelocity = Vector3.zero;
             heldRb = null;
-        }   
+        }
+        return; 
     }
+
+    if (availableInteractions.Count == 0)
+    {
+        if (currentPlayerInteraction != null)
+        {
+            RemoveOutline(currentPlayerInteraction.transform);
+            currentPlayerInteraction = null;
+        }
+        return;
+    }
+
+    availableInteractions.Sort(new SortByProximity(transform));
+    GameObject nearestObject = availableInteractions[0];
+
+    if (nearestObject != currentPlayerInteraction)
+    {
+        if (currentPlayerInteraction != null)
+        {
+            RemoveOutline(currentPlayerInteraction.transform);
+        }
+
+        ApplyOutline(nearestObject.transform);
+        
+        currentPlayerInteraction = nearestObject;
+    }
+
+    if (InputSystem.actions.FindAction("Interact").triggered && currentPlayerInteraction != null)
+    {
+        if (currentPlayerInteraction.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)
+        {
+            heldRb = currentPlayerInteraction.GetComponent<Rigidbody>();
+            heldRb.transform.SetParent(null);
+            heldRb.useGravity = false;
+            heldRb.rotation = Quaternion.identity;
+            
+            RemoveOutline(currentPlayerInteraction.transform);
+            currentPlayerInteraction = null; 
+        }
+        else
+        {
+            currentPlayerInteraction.GetComponent<Interactable>().Interact();
+        }
+    }
+}
 
 
     void FixedUpdate()
@@ -71,9 +119,9 @@ public class PlayerInteractionLogic : MonoBehaviour
     }
 
 
+
     void MoveObjectToHand()
     {
-       // 1. Get vector to hand
         Vector3 directionToHand = holdPoint.position - heldRb.position;
 
         if(directionToHand.magnitude > maxDistanceToObject)
@@ -84,24 +132,56 @@ public class PlayerInteractionLogic : MonoBehaviour
             return;
         }
         
-        // 2. Calculate the velocity needed to reach the hand in ONE physics step
-        // This is smoother than raw force because it adjusts automatically based on framerate
+        
         Vector3 targetVelocity = directionToHand / Time.fixedDeltaTime;
 
-        // 3. Clamp the force so it doesn't explode if you turn too fast
-        // "15" is the max speed. Lower = smoother/slower. Higher = snappier.
         float maxSpeed = 15f; 
         targetVelocity = Vector3.ClampMagnitude(targetVelocity, maxSpeed);
 
-        // 4. Feed Forward (Your player movement)
         if (characterController != null)
         {
             targetVelocity += characterController.velocity;
         }
 
-        // 5. Apply
-        // We use velocity directly instead of force for smoothness
         heldRb.linearVelocity = Vector3.Lerp(heldRb.linearVelocity, targetVelocity, 0.2f);
+    }
+
+
+    void ApplyOutline(Transform target)
+    {
+        Renderer render = target.GetComponent<Renderer>();
+
+        if(render == null) render = target.GetComponentInChildren<Renderer>();
+        
+        if (render != null)
+        {
+            List<Material> materials = render.materials.ToList();
+
+            if (materials.Count > 0 && materials[materials.Count - 1].name.StartsWith(outlineMaterial.name))
+            {
+                return; 
+            }
+
+            materials.Add(outlineMaterial);
+            render.materials = materials.ToArray();
+        }
+    }
+
+    void RemoveOutline(Transform target)
+    {
+        Renderer render = target.GetComponent<Renderer>();
+        if(render == null) render = target.GetComponentInChildren<Renderer>();
+
+        if (render != null)
+        {
+            List<Material> materials = render.materials.ToList();
+
+            if (materials.Count > 1 && materials[materials.Count - 1].name.StartsWith(outlineMaterial.name)) 
+            {
+                materials.RemoveAt(materials.Count - 1);
+                render.materials = materials.ToArray();
+            }
+        }
     }
 }
 

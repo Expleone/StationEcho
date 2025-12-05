@@ -22,10 +22,12 @@ public class Switch : MonoBehaviour
     private Vector3 visualStartPos;
     private Coroutine animationCoroutine;
     private MaterialSwapper swapper;
-    private bool playerInRange = false;
+    // private bool playerInRange = false;
     private InputAction interactAction;
 
-    public  PuzzleMarkController puzzleMarkController = null;
+    private Interactable interactableComponent;
+
+    public PuzzleMarkController puzzleMarkController = null;
 
     private void Awake()
     {
@@ -34,54 +36,16 @@ public class Switch : MonoBehaviour
 
         visualStartPos = SwitchVisual.localPosition;
         swapper = SwitchVisual.GetComponent<MaterialSwapper>();
+        interactableComponent = GetComponent<Interactable>();
     }
 
-    private void OnEnable()
-    {
-        if (inputActions != null)
-        {
-            var map = inputActions.FindActionMap(actionMapName);
-            if (map != null)
-            {
-                interactAction = map.FindAction(interactActionName);
-                if (interactAction != null)
-                    interactAction.Enable();
-                else
-                    Debug.LogWarning($"Action '{interactActionName}' not found in ActionMap '{actionMapName}'.");
-            }
-            else
-            {
-                Debug.LogWarning($"ActionMap '{actionMapName}' not found in InputActionAsset '{inputActions.name}'.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("InputActionAsset not assigned to Switch!");
-        }
-    }
-
-    private void OnDisable()
-    {
-        interactAction?.Disable();
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
-            playerInRange = true;
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
-            playerInRange = false;
-    }
 
     private void Update()
     {
-        if (playerInRange && interactAction != null && interactAction.triggered)
+        if (interactableComponent.HasBeenInteractedWith())
         {
             Toggle();
+            interactableComponent.ResetInteraction();
         }
     }
 
@@ -104,7 +68,7 @@ public class Switch : MonoBehaviour
 
         if (puzzleMarkController)
         {
-            foreach(MaterialSwapper ms in puzzleMarkController.childObjects)
+            foreach (MaterialSwapper ms in puzzleMarkController.childObjects)
             {
                 ms.SetMaterial(0, ACT_MAT_PUZZLE_MARK);
             }
@@ -122,7 +86,7 @@ public class Switch : MonoBehaviour
 
         if (puzzleMarkController)
         {
-            foreach(MaterialSwapper ms in puzzleMarkController.childObjects)
+            foreach (MaterialSwapper ms in puzzleMarkController.childObjects)
             {
                 ms.SetMaterial(0, DEF_MAT_PUZZLE_MARK);
             }

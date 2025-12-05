@@ -178,6 +178,8 @@ MonoBehaviour:
   waitingTime: 0
   waypointPrefab: {fileID: 8124357195254974425, guid: 5b5e23df0d3800f4395fb55f1ec84bee,
     type: 3}
+  PathMarkPrefab: {fileID: 4577331058511665617, guid: 81c4094ac91ae33448617176a5adbfd9,
+    type: 3}
   allowedToMove: 1
   passengers: []
 --- !u!1001 &3464191302977432810

@@ -13,6 +13,8 @@ public class LevelData
 }
 public class GameData
 {
+    public Vector3 extraPosition = new Vector3();
+    public int currentPlatformWaypoint = 0;
     // public Vector3 playerPosition = new Vector3();
     // public Vector3 cameraPosition = new Vector3();
     // public Quaternion cameraRotation = new Quaternion();

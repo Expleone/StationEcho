@@ -38,7 +38,6 @@ public class PlayerInteractionLogic : MonoBehaviour
         
         if (InputSystem.actions.FindAction("Interact").triggered)
         {
-            heldGravityMode = heldRb.useGravity;
             heldRb.transform.SetParent(null);
             heldRb.useGravity = heldGravityMode;
             heldRb.linearVelocity = Vector3.zero;
@@ -77,6 +76,7 @@ public class PlayerInteractionLogic : MonoBehaviour
         if (currentPlayerInteraction.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)
         {
             heldRb = currentPlayerInteraction.GetComponent<Rigidbody>();
+            heldGravityMode = heldRb.useGravity;
             heldRb.transform.SetParent(null);
             heldRb.useGravity = false;
             heldRb.rotation = Quaternion.identity;

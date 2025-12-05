@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor.ShaderGraph;
 using UnityEngine;
 
-public class PlatformLogic : MonoBehaviour
+public class PlatformLogic : MonoBehaviour, IDataPersistance
 {
     [SerializeField] float speed;
     [SerializeField] float waitingTime; //time platform awaits at the waypoint
     [SerializeField] GameObject waypointPrefab;
+    [SerializeField] GameObject PathMarkPrefab;
     private List<Transform> waypointTransforms = new List<Transform>();
     private Transform platformObjectTransform;
     private int waypointCount = 0;
@@ -16,6 +18,7 @@ public class PlatformLogic : MonoBehaviour
     private float currentWaitTime = 0;
     private Vector3 linearVelocity = new Vector3(0, 0, 0);
     private Vector3 currentMovement = new Vector3(0, 0, 0);
+    private Vector3 extraPosition = new Vector3(0, 0, 0);
     public Vector3 GetPropagationMovement()
     {
         return currentMovement;
@@ -37,13 +40,63 @@ public class PlatformLogic : MonoBehaviour
         }
         if (waypointTransforms.Count > 0)
         {   //Create a waypoint on the platform's local position
-            GameObject spawned = Instantiate(waypointPrefab, Vector3.zero, Quaternion.identity, transform); 
-            spawned.transform.localPosition = platformObjectTransform.localPosition;
-            spawned.GetComponent<AdvancedWaypointGizmos>().platformObjectTransform = platformObjectTransform;
-
-            waypointTransforms.Add(spawned.transform);
-            waypointCount = transform.childCount - 1;
+            if(extraPosition != new Vector3(0, 0, 0))
+            {
+                GameObject spawned = Instantiate(waypointPrefab, Vector3.zero, Quaternion.identity, transform); 
+                spawned.transform.localPosition = platformObjectTransform.localPosition;
+                spawned.GetComponent<AdvancedWaypointGizmos>().platformObjectTransform = platformObjectTransform;
+                waypointTransforms.Add(spawned.transform);
+                waypointCount = transform.childCount - 1;
+                
+                extraPosition = spawned.transform.localPosition;
+            }
+            else
+            {
+                GameObject spawned = Instantiate(waypointPrefab, Vector3.zero, Quaternion.identity, transform); 
+                spawned.transform.localPosition = extraPosition;
+                spawned.GetComponent<AdvancedWaypointGizmos>().platformObjectTransform = platformObjectTransform;
+                waypointTransforms.Add(spawned.transform);
+                waypointCount = transform.childCount - 1;
+            }
+            CreateMarkings();
         }
+    }
+
+
+    void CreateMarkings()
+    {
+        if(waypointCount == 2)
+        {
+            Transform first = waypointTransforms[0];
+            Transform second = waypointTransforms[1];
+            createMarking(first, second);
+            return;
+        }
+
+        for(int i = 0; i < waypointTransforms.Count; ++i)
+        {
+            Transform first = waypointTransforms[i];
+            Transform second;
+            if(i == waypointTransforms.Count - 1)
+            {
+                second = waypointTransforms[0];
+            }
+            else
+            {
+                second = waypointTransforms[i+1];
+            }
+            createMarking(first, second);
+        }
+    }
+
+
+    void createMarking(Transform first, Transform second)
+    {
+        GameObject spawned = Instantiate(PathMarkPrefab, Vector3.zero, Quaternion.identity, transform);
+        float z = Vector3.Magnitude(first.transform.localPosition - second.transform.localPosition);
+        spawned.transform.localScale = new Vector3(.1f, spawned.transform.localScale.y, z);
+        spawned.transform.localPosition = (first.localPosition + second.localPosition) / 2;
+        spawned.transform.LookAt(second);
     }
 
 
@@ -131,5 +184,18 @@ public class PlatformLogic : MonoBehaviour
         }
 
         return false;
+    }
+
+
+    public void LoadData(GameData data, string levelId)
+    {
+        this.extraPosition = data.extraPosition;
+        this.currentWaypoint = data.currentPlatformWaypoint;
+    }
+
+    public void SaveData(ref GameData data, string levelId)
+    {
+        data.extraPosition = this.extraPosition;
+        data.currentPlatformWaypoint = this.currentWaypoint;
     }
 }

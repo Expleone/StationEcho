@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor.ShaderGraph;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class PlatformLogic : MonoBehaviour, IDataPersistance
 {
@@ -18,7 +19,7 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
     private float currentWaitTime = 0;
     private Vector3 linearVelocity = new Vector3(0, 0, 0);
     private Vector3 currentMovement = new Vector3(0, 0, 0);
-    private Vector3 extraPosition = new Vector3(0, 0, 0);
+    private Vector3 extraPosition = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
     public Vector3 GetPropagationMovement()
     {
         return currentMovement;
@@ -40,7 +41,7 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
         }
         if (waypointTransforms.Count > 0)
         {   //Create a waypoint on the platform's local position
-            if(extraPosition != new Vector3(0, 0, 0))
+            if(extraPosition == new Vector3(float.MaxValue, float.MaxValue, float.MaxValue))
             {
                 GameObject spawned = Instantiate(waypointPrefab, Vector3.zero, Quaternion.identity, transform); 
                 spawned.transform.localPosition = platformObjectTransform.localPosition;

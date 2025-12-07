@@ -10,7 +10,11 @@ public class Button : MonoBehaviour
     public float ActiveTime = 3f;
     public Transform ButtonVisual;
     public float Speed = 5f;
+
+    [Header("Press Offset Settings")]
     public Vector3 PressDirection = Vector3.down;
+    public float PressDistance = 0.1f;
+
     public string PressMaterial = "pressed";
     public string BaseMaterial = "base";
     public string DEF_MAT_PUZZLE_MARK = "DEF";
@@ -20,7 +24,10 @@ public class Button : MonoBehaviour
     public InputActionAsset inputActions;
     public string actionMapName = "Player";
     public string interactActionName = "Interact";
+
     private Vector3 visualStartPos;
+    private Vector3 pressedPosition;
+
     private Coroutine animationCoroutine;
     private MaterialSwapper swapper;
     private InputAction interactAction;
@@ -28,15 +35,19 @@ public class Button : MonoBehaviour
 
     private Interactable interactableComponent;
 
-    public  PuzzleMarkController puzzleMarkController = null;
-    
+    public PuzzleMarkController puzzleMarkController = null;
+
     private bool isResetting = false;
+
     private void Awake()
     {
         if (ButtonVisual == null)
             ButtonVisual = transform.GetChild(0);
 
         visualStartPos = ButtonVisual.localPosition;
+
+        pressedPosition = visualStartPos + PressDirection.normalized * PressDistance;
+
         swapper = ButtonVisual.GetComponent<MaterialSwapper>();
         interactableComponent = GetComponent<Interactable>();
     }
@@ -62,14 +73,12 @@ public class Button : MonoBehaviour
 
         IsPressed = true;
         swapper?.SetMaterial(0, PressMaterial);
-        animationCoroutine = StartCoroutine(Move(ButtonVisual.localPosition, visualStartPos + PressDirection));
+        animationCoroutine = StartCoroutine(Move(ButtonVisual.localPosition, pressedPosition));
 
         if (puzzleMarkController)
         {
-            foreach(MaterialSwapper ms in puzzleMarkController.childObjects)
-            {
+            foreach (MaterialSwapper ms in puzzleMarkController.childObjects)
                 ms.SetMaterial(0, ACT_MAT_PUZZLE_MARK);
-            }
         }
 
         if (timerCoroutine != null)
@@ -94,11 +103,10 @@ public class Button : MonoBehaviour
 
         if (puzzleMarkController)
         {
-            foreach(MaterialSwapper ms in puzzleMarkController.childObjects)
-            {
+            foreach (MaterialSwapper ms in puzzleMarkController.childObjects)
                 ms.SetMaterial(0, DEF_MAT_PUZZLE_MARK);
             }
-        }
+
         interactableComponent.ResetInteraction();
         isResetting = false;
     }

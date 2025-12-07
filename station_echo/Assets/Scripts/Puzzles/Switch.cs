@@ -8,7 +8,11 @@ public class Switch : MonoBehaviour
     public bool IsOn = false;
     public Transform SwitchVisual;
     public float Speed = 5f;
+
+    [Header("Press Offset Settings")]
     public Vector3 PressDirection = Vector3.down;
+    public float PressDistance = 0.1f;
+
     public string PressMaterial = "pressed";
     public string BaseMaterial = "base";
     public string DEF_MAT_PUZZLE_MARK = "DEF";
@@ -20,9 +24,10 @@ public class Switch : MonoBehaviour
     public string interactActionName = "Interact";
 
     private Vector3 visualStartPos;
+    private Vector3 pressedPosition;
+
     private Coroutine animationCoroutine;
     private MaterialSwapper swapper;
-    // private bool playerInRange = false;
     private InputAction interactAction;
 
     private Interactable interactableComponent;
@@ -35,10 +40,13 @@ public class Switch : MonoBehaviour
             SwitchVisual = transform.GetChild(0);
 
         visualStartPos = SwitchVisual.localPosition;
+
+        // вычисление фиксированной конечной позиции
+        pressedPosition = visualStartPos + PressDirection.normalized * PressDistance;
+
         swapper = SwitchVisual.GetComponent<MaterialSwapper>();
         interactableComponent = GetComponent<Interactable>();
     }
-
 
     private void Update()
     {
@@ -64,14 +72,12 @@ public class Switch : MonoBehaviour
 
         IsOn = true;
         swapper?.SetMaterial(0, PressMaterial);
-        animationCoroutine = StartCoroutine(Move(SwitchVisual.localPosition, visualStartPos + PressDirection));
+        animationCoroutine = StartCoroutine(Move(SwitchVisual.localPosition, pressedPosition));
 
         if (puzzleMarkController)
         {
             foreach (MaterialSwapper ms in puzzleMarkController.childObjects)
-            {
                 ms.SetMaterial(0, ACT_MAT_PUZZLE_MARK);
-            }
         }
     }
 
@@ -87,9 +93,7 @@ public class Switch : MonoBehaviour
         if (puzzleMarkController)
         {
             foreach (MaterialSwapper ms in puzzleMarkController.childObjects)
-            {
                 ms.SetMaterial(0, DEF_MAT_PUZZLE_MARK);
-            }
         }
     }
 

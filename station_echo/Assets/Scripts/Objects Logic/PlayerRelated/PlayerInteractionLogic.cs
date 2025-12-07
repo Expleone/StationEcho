@@ -106,15 +106,31 @@ public class PlayerInteractionLogic : MonoBehaviour
 
     void DropLogic()
     {
-        float bottomY = transform.position.y - transform.localScale.y / 2;
-        float upperY = heldRb.transform.localScale.y / 2 + heldRb.transform.position.y;
-
-        if(upperY < bottomY)
+        if(Physics.gravity == new Vector3(0, 0, 1))
         {
-            heldRb.transform.SetParent(null);
-            heldRb.useGravity = true;
-            heldRb.linearVelocity = Vector3.zero;
-            heldRb = null;
+            float bottomY = transform.position.y - transform.localScale.y / 2;
+            float upperY = heldRb.transform.localScale.y / 2 + heldRb.transform.position.y;
+
+            if(upperY < bottomY)
+            {
+                heldRb.transform.SetParent(null);
+                heldRb.useGravity = true;
+                heldRb.linearVelocity = Vector3.zero;
+                heldRb = null;
+            }
+        }
+        else if (Physics.gravity == new Vector3(0, 0, -1))
+        {
+            float bottomY = heldRb.transform.localScale.y / 2 + heldRb.transform.position.y;
+            float upperY = transform.position.y - transform.localScale.y / 2;
+
+            if(upperY < bottomY)
+            {
+                heldRb.transform.SetParent(null);
+                heldRb.useGravity = true;
+                heldRb.linearVelocity = Vector3.zero;
+                heldRb = null;
+            }
         }
     }
 

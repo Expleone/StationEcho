@@ -13,6 +13,7 @@ public class LevelData
 }
 public class GameData
 {
+    public string currentLevel = "TutorialLevel";
     public Vector3 extraPosition = new Vector3();
     public int currentPlatformWaypoint = 0;
     // public Vector3 playerPosition = new Vector3();

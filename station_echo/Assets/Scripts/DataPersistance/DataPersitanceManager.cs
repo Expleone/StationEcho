@@ -16,7 +16,7 @@ public class DataPersitanceManager : MonoBehaviour
     private List<IDataPersistance> dataPersistanceObjects;
     private FileDataHandler dataHandler;
     private bool isNewGame = false;
-    private string levelId;
+    private string levelId = "";
     public static DataPersitanceManager instance { get; private set; }
 
     private void Awake()
@@ -30,6 +30,7 @@ public class DataPersitanceManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         instance = this;
         this.dataHandler = new FileDataHandler(Application.persistentDataPath, fileName);
+        this.gameData = dataHandler.Load();
     }
 
     private void OnEnable()
@@ -73,7 +74,12 @@ public class DataPersitanceManager : MonoBehaviour
             Debug.Log("No save data found. Creating new Game Data.");
             NewGame();
         }
+        if (!gameData.levels.ContainsKey(levelId))
+        {
+            gameData.levels[levelId] = new LevelData();
+        }
 
+        gameData.currentLevel = levelId;
         if (isNewGame || gameData.levels[levelId].isCompleted)
         {
             Debug.Log("New Game: Scanning scene for default positions...");
@@ -100,7 +106,7 @@ public class DataPersitanceManager : MonoBehaviour
         this.dataPersistanceObjects = FindAllDataPersistanceObjects();
         if (this.gameData == null)
         {
-            Debug.LogWarning("No data was found.New Game needs to be started");
+            Debug.Log("No data was found.New Game needs to be started");
             return;
         }
 
@@ -142,5 +148,11 @@ public class DataPersitanceManager : MonoBehaviour
     public bool HasGameData()
     {
         return gameData != null;
+    }
+
+    public string GetCurrentLevelId()
+    {
+        if (gameData != null && !string.IsNullOrEmpty(gameData.currentLevel)) return gameData.currentLevel;
+        return "";
     }
 }

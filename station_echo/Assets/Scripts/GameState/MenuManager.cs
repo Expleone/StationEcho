@@ -37,7 +37,6 @@ public class MenuManager : MonoBehaviour
     public void LoadGameStateMenu()
     {
         DisableMenu();
-        // DataPersitanceManager.instance.SaveGame();
         SceneManager.LoadScene("Menu");
         GameManager.Instance.UpdateGameState(GameState.Menu);
     }
@@ -48,11 +47,17 @@ public class MenuManager : MonoBehaviour
         GameManager.Instance.UpdateGameState(GameState.EscMenu);
     }
 
-    public void LoadGameStateGame(string sceneName)
+    public void LoadGameStateGame()
     {
+        string sceneToLoad = DataPersitanceManager.instance.GetCurrentLevelId();
+        if (sceneToLoad == "")
+        {
+            Debug.LogError("Save file doesn't exist");
+            return;
+        }
         DisableMenu();
         GameManager.Instance.UpdateGameState(GameState.Game);
-        SceneManager.LoadScene(sceneName);
+        SceneManager.LoadScene(sceneToLoad);
     }
 
     public void NewGameStateGame(string sceneName)

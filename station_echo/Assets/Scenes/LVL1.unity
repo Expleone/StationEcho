@@ -5834,7 +5834,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1697414366}
+    m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3092325462876319958, guid: b5c71562207ba8e48a59aa9d2f9fc52e,
         type: 3}
@@ -6082,23 +6082,6 @@ RectTransform:
   m_AnchoredPosition: {x: 1397.9867, y: -6.069472}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!4 &1697414366 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7520272421931564698, guid: 4fd1a406fa1a30446abcd15728fa85bf,
-    type: 3}
-  m_PrefabInstance: {fileID: 5391245929722306482}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1697414364}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -593.1546, y: -4.85948, z: -847.761}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 825080150}
-  - {fileID: 1398890484}
-  m_Father: {fileID: 1885794623}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1703154952 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2998302127242857116, guid: 89e07657946476d41a6b582b47c0517d,
@@ -6813,7 +6796,6 @@ Transform:
   - {fileID: 166625598}
   - {fileID: 1843068658}
   - {fileID: 832427101}
-  - {fileID: 1697414366}
   - {fileID: 276534120}
   - {fileID: 1463370474}
   - {fileID: 2054382957}
@@ -8085,3 +8067,4 @@ SceneRoots:
   - {fileID: 279127547}
   - {fileID: 249535297}
   - {fileID: 2112725294}
+  - {fileID: 1635170294}

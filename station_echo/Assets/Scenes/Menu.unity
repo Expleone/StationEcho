@@ -2717,7 +2717,7 @@ GameObject:
   - component: {fileID: 1212227719}
   - component: {fileID: 1212227718}
   m_Layer: 5
-  m_Name: Settings (1)
+  m_Name: Continue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2790,13 +2790,13 @@ MonoBehaviour:
       - m_Target: {fileID: 577943178}
         m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
         m_MethodName: LoadGameStateGame
-        m_Mode: 5
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: LVL1
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1212227719
@@ -3839,8 +3839,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1483393854}
-  - {fileID: 75675367}
   - {fileID: 1212227717}
+  - {fileID: 75675367}
   - {fileID: 1589964342}
   m_Father: {fileID: 1538836365}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

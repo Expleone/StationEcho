@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PressurePlate : MonoBehaviour
@@ -9,7 +10,7 @@ public class PressurePlate : MonoBehaviour
     public Vector3 PressDirection = Vector3.down;
     private float PressAmount;
     private Coroutine AnimationCoroutine;
-    private int objectsOnPlate = 0;
+    private List<GameObject> objectsOnPlate = new List<GameObject>();
     private Vector3 visualStartPos;
     private MaterialSwapper swapper;
     public string PressMaterial = "pressed";
@@ -28,12 +29,28 @@ public class PressurePlate : MonoBehaviour
         PressAmount = Mathf.Abs(PlateVisual.localScale.y * 0.9f);
     }
 
+    void Update()
+    {
+        for (int i = objectsOnPlate.Count -1; i >= 0; i--)
+        {
+            if(objectsOnPlate[i] == null)
+            {
+                objectsOnPlate.RemoveAt(i);
+            }
+        }
+        if (IsPressed && objectsOnPlate.Count == 0)
+        {
+            Unpress();
+            swapper.SetMaterial(0, BaseMaterial);
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("PlayerInteractionArea"))
             return;
-        objectsOnPlate++;
-        if (!IsPressed && objectsOnPlate > 0)
+        objectsOnPlate.Add(other.gameObject);
+        if (!IsPressed && objectsOnPlate.Count > 0)
         {
             Press();
 	    swapper.SetMaterial(0, PressMaterial);
@@ -44,8 +61,8 @@ public class PressurePlate : MonoBehaviour
     {
         if (other.CompareTag("PlayerInteractionArea"))
             return;
-        objectsOnPlate = Mathf.Max(0, objectsOnPlate - 1);
-        if (IsPressed && objectsOnPlate == 0)
+        objectsOnPlate.Remove(other.gameObject);
+        if (IsPressed && objectsOnPlate.Count == 0)
         {
             Unpress();
 	    swapper.SetMaterial(0, BaseMaterial);

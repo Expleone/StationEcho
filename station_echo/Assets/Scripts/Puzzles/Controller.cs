@@ -8,6 +8,7 @@ public class Controller : MonoBehaviour
         OPEN_DOORS,
         CHANGE_GRAVITY,
         ACTIVATE_PLATFORM,
+        DISPENSE_ITEM
     }
 
     public enum ActivationMode
@@ -28,14 +29,17 @@ public class Controller : MonoBehaviour
     public List<PressurePlate> plates;
     public List<Switch> switches;
     public List<Button> buttons;
+    public List<Dispenser> dispensers;
 
     private Vector3 gravityStatePast;
+    private  bool objectDispensed = false;
 
     private void Start()
     {
         if(whatToDo == WhatToDoOptions.OPEN_DOORS)              doors = new List<Door>(GetComponentsInChildren<Door>());
         else if(whatToDo == WhatToDoOptions.ACTIVATE_PLATFORM)  platforms = new List<PlatformLogic>(GetComponentsInChildren<PlatformLogic>());
         else if(whatToDo == WhatToDoOptions.CHANGE_GRAVITY)     gravityStatePast = Physics.gravity;
+        else if(whatToDo == WhatToDoOptions.DISPENSE_ITEM)      dispensers = new List<Dispenser>(GetComponentsInChildren<Dispenser>());
 
         plates = new List<PressurePlate>(GetComponentsInChildren<PressurePlate>());
         switches = new List<Switch>(GetComponentsInChildren<Switch>());
@@ -52,7 +56,7 @@ public class Controller : MonoBehaviour
         bool allActive = true;
         bool anyActive = false;
 	    bool moreThanOneActive = false;
-
+        
         foreach (var plate in plates)
         {
             if (plate != null)
@@ -106,6 +110,8 @@ public class Controller : MonoBehaviour
             break;
         }
 
+        if (!flag) objectDispensed = false;
+
         switch(whatToDo)
         {
             case WhatToDoOptions.OPEN_DOORS :
@@ -137,6 +143,17 @@ public class Controller : MonoBehaviour
                     else
                     {
                         if (platform.allowedToMove) platform.allowedToMove = false;
+                    }
+                }
+            break;
+
+            case WhatToDoOptions.DISPENSE_ITEM :
+                foreach (var dispenser in dispensers)
+                {
+                    if (flag && !objectDispensed)
+                    {
+                        dispenser.DispenseItem();
+                        objectDispensed = true;
                     }
                 }
             break;

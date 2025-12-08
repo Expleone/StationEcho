@@ -20,6 +20,11 @@ public class UpdateInteractionArea : MonoBehaviour
         for (int i = playerInteractionLogic.unavailableInteractions.Count - 1; i >= 0; i--)
         {
             GameObject gameObject = playerInteractionLogic.unavailableInteractions[i];
+            if(gameObject == null)
+            {
+                playerInteractionLogic.unavailableInteractions.RemoveAt(i);
+                continue;
+            }
 
             if (gameObject.GetComponent<Interactable>().interactionType == InteractionType.Pressable)
             {
@@ -46,6 +51,13 @@ public class UpdateInteractionArea : MonoBehaviour
         for (int i = playerInteractionLogic.availableInteractions.Count - 1; i >= 0; i--)
         {
             GameObject gameObject = playerInteractionLogic.availableInteractions[i];
+
+            if(gameObject == null)
+            {
+                playerInteractionLogic.availableInteractions.RemoveAt(i);
+                continue;
+            }
+
             if (gameObject.GetComponent<Interactable>().interactionType == InteractionType.Pressable)
             {
                 if (CheckLineOfSight(gameObject) && gameObject.GetComponent<Interactable>().HasBeenInteractedWith())

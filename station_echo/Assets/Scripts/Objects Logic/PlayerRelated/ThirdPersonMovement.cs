@@ -72,7 +72,7 @@ public class ThirdPersonMovement : MonoBehaviour
         // Get the gravity direction (normalized)
         Vector3 castDirection = Physics.gravity.normalized;
         groundCheckRadius = controller.radius;
-        groundCheckDistance = controller.height / 2f - controller.radius + 0.1f;
+        groundCheckDistance = controller.height / 2f - controller.radius + 0.15f;
 
         Vector3 castOrigin = transform.position;
         previousGroundHit = groundHit;

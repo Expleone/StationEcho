@@ -17,6 +17,16 @@ public class Interactable : MonoBehaviour
 
     private bool haveBeenInteractedWith = false;
 
+    private Transform bearerTransform;
+
+    public void SetBearerTransform(Transform bearer)
+    {
+        bearerTransform = bearer;
+    }
+    public Transform GetBearerTransform()
+    {
+        return bearerTransform;
+    }
     public InteractionType GetInteractionType()
     {
         return interactionType;

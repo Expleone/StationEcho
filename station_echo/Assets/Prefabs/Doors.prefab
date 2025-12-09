@@ -175,7 +175,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 0d71f9a2cddad0d43833a1db7494a983,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.00077
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0d71f9a2cddad0d43833a1db7494a983,
         type: 3}
@@ -251,6 +251,8 @@ MonoBehaviour:
   IsLocked: 0
   IsOpen: 0
   Speed: 0.016
+  UseTimeBasedMovement: 0
+  OpenTime: 1
   SlideDistance: 0.016
   SlideDirection: {x: 0, y: 1, z: 0}
 --- !u!64 &6435366057067970940
@@ -317,7 +319,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 1f31b693572afb9449dac47aef9238c7,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.00077
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1f31b693572afb9449dac47aef9238c7,
         type: 3}
@@ -399,6 +401,8 @@ MonoBehaviour:
   IsLocked: 0
   IsOpen: 0
   Speed: 0.013
+  UseTimeBasedMovement: 0
+  OpenTime: 1
   SlideDistance: 0.013
   SlideDirection: {x: 0, y: -1, z: 0}
 --- !u!64 &6857158927232689746

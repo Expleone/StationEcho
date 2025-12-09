@@ -16,14 +16,15 @@ public class PlayerInteractionLogic : MonoBehaviour
     public List<GameObject> availableInteractions = new List<GameObject>();
     public List<GameObject> unavailableInteractions = new List<GameObject>();
     private Rigidbody heldRb = null;
-    public Material outlineMaterial;
+    public OutlineAdder outlineAdder;
+    
     private GameObject currentPlayerInteraction = null;
     private bool heldGravityMode = false;
 
     private Material[] originalMaterials;
     void Start()
     {
-    
+        outlineAdder = GetComponent<OutlineAdder>();
     }
 
     void Update()
@@ -32,14 +33,15 @@ public class PlayerInteractionLogic : MonoBehaviour
     {
         if (currentPlayerInteraction != null)
         {
-            RemoveOutline(currentPlayerInteraction.transform);
+            outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
             currentPlayerInteraction = null;
         }
         
         if (InputSystem.actions.FindAction("Interact").triggered)
         {
+            heldRb.GetComponent<Interactable>().SetBearerTransform(null);
             heldRb.transform.SetParent(null);
-            heldRb.useGravity = heldGravityMode;
+            heldRb.useGravity = true;
             heldRb.linearVelocity = Vector3.zero;
             heldRb = null;
         }
@@ -50,7 +52,7 @@ public class PlayerInteractionLogic : MonoBehaviour
     {
         if (currentPlayerInteraction != null)
         {
-            RemoveOutline(currentPlayerInteraction.transform);
+            outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
             currentPlayerInteraction = null;
         }
         return;
@@ -63,10 +65,10 @@ public class PlayerInteractionLogic : MonoBehaviour
     {
         if (currentPlayerInteraction != null)
         {
-            RemoveOutline(currentPlayerInteraction.transform);
+            outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
         }
 
-        ApplyOutline(nearestObject.transform);
+        outlineAdder.ApplyOutline(nearestObject.transform);
         
         currentPlayerInteraction = nearestObject;
     }
@@ -76,12 +78,12 @@ public class PlayerInteractionLogic : MonoBehaviour
         if (currentPlayerInteraction.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)
         {
             heldRb = currentPlayerInteraction.GetComponent<Rigidbody>();
-            heldGravityMode = heldRb.useGravity;
+            heldRb.GetComponent<Interactable>().SetBearerTransform(transform);
             heldRb.transform.SetParent(null);
             heldRb.useGravity = false;
             heldRb.rotation = Quaternion.identity;
             
-            RemoveOutline(currentPlayerInteraction.transform);
+            outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
             currentPlayerInteraction = null; 
         }
         else
@@ -111,7 +113,7 @@ public class PlayerInteractionLogic : MonoBehaviour
             float bottomY = transform.position.y - transform.localScale.y / 2;
             float upperY = heldRb.transform.localScale.y / 2 + heldRb.transform.position.y;
 
-            if(upperY < bottomY)
+            if(upperY + 0.1f < bottomY)
             {
                 heldRb.transform.SetParent(null);
                 heldRb.useGravity = true;
@@ -124,7 +126,7 @@ public class PlayerInteractionLogic : MonoBehaviour
             float bottomY = heldRb.transform.localScale.y / 2 + heldRb.transform.position.y;
             float upperY = transform.position.y - transform.localScale.y / 2;
 
-            if(upperY < bottomY)
+            if(upperY + 0.1f < bottomY)
             {
                 heldRb.transform.SetParent(null);
                 heldRb.useGravity = true;
@@ -162,43 +164,6 @@ public class PlayerInteractionLogic : MonoBehaviour
         heldRb.linearVelocity = Vector3.Lerp(heldRb.linearVelocity, targetVelocity, 0.2f);
     }
 
-
-    void ApplyOutline(Transform target)
-    {
-        Renderer render = target.GetComponent<Renderer>();
-
-        if(render == null) render = target.GetComponentInChildren<Renderer>();
-        
-        if (render != null)
-        {
-            List<Material> materials = render.materials.ToList();
-
-            if (materials.Count > 0 && materials[materials.Count - 1].name.StartsWith(outlineMaterial.name))
-            {
-                return; 
-            }
-
-            materials.Add(outlineMaterial);
-            render.materials = materials.ToArray();
-        }
-    }
-
-    void RemoveOutline(Transform target)
-    {
-        Renderer render = target.GetComponent<Renderer>();
-        if(render == null) render = target.GetComponentInChildren<Renderer>();
-
-        if (render != null)
-        {
-            List<Material> materials = render.materials.ToList();
-
-            if (materials.Count > 1 && materials[materials.Count - 1].name.StartsWith(outlineMaterial.name)) 
-            {
-                materials.RemoveAt(materials.Count - 1);
-                render.materials = materials.ToArray();
-            }
-        }
-    }
 }
 
 

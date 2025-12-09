@@ -86,9 +86,9 @@ public class MoveableObject : MonoBehaviour
         }
         else if (objectType == ObjectType.Pickable)
         {
-            if (this.transform.parent != null && this.transform.parent.GetComponent<ThirdPersonMovement>() != null)
+            if (this.GetComponent<Interactable>().GetBearerTransform() != null && this.GetComponent<Interactable>().GetBearerTransform().GetComponent<ThirdPersonMovement>() != null)
             {
-                propagationMovement = this.transform.parent.GetComponent<ThirdPersonMovement>().GetMovement() * Time.fixedDeltaTime;
+                propagationMovement = this.GetComponent<Interactable>().GetBearerTransform().GetComponent<ThirdPersonMovement>().GetMovement() * Time.fixedDeltaTime;
                 propagate = false;
             }
             else

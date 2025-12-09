@@ -49,6 +49,14 @@ public class Controller : MonoBehaviour
         {
             platform.allowedToMove = false;
         }
+        if(whatToDo == WhatToDoOptions.DISPENSE_ITEM)
+        {
+            foreach(var button in buttons)
+            {
+                button.ActiveTime = dispensers[0].GetDispenseDelay();
+            }
+        }
+        
     }
 
     private void Update()
@@ -152,11 +160,26 @@ public class Controller : MonoBehaviour
                 {
                     if (flag && !objectDispensed)
                     {
-                        dispenser.DispenseItem();
+                        if (!dispenser.DispenseItem())
+                        {
+                            foreach (var button in buttons)
+                            {
+                                StartCoroutine(unpressButtonsAfterDelay(1f));
+                            }
+                        }
                         objectDispensed = true;
                     }
                 }
             break;
+        }
+    }
+
+    private System.Collections.IEnumerator unpressButtonsAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        foreach (var btn in buttons)
+        {
+            btn.Unpress();
         }
     }
 

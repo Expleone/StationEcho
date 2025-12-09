@@ -18,6 +18,11 @@ public class GameoverZone : MonoBehaviour
         {
             DataPersitanceManager.instance.LoadGame();
         }
+
+        if (other.GetComponent<Interactable>() != null && other.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)
+        {
+            Destroy(other.gameObject);
+        }   
     }
 
 

@@ -28,6 +28,7 @@ public class PlayerInteractionLogic : MonoBehaviour
 
     void Update()
 {
+    // Drop
     if (heldRb)
     {
         if (currentPlayerInteraction != null)
@@ -35,17 +36,18 @@ public class PlayerInteractionLogic : MonoBehaviour
             RemoveOutline(currentPlayerInteraction.transform);
             currentPlayerInteraction = null;
         }
-        
+       
         if (InputSystem.actions.FindAction("Interact").triggered)
         {
             heldRb.transform.SetParent(null);
             heldRb.useGravity = heldGravityMode;
             heldRb.linearVelocity = Vector3.zero;
+            heldRb.angularVelocity = Vector3.zero;
             heldRb = null;
         }
         return; 
     }
-
+    // Do nothing (remove outlines)
     if (availableInteractions.Count == 0)
     {
         if (currentPlayerInteraction != null)
@@ -55,7 +57,7 @@ public class PlayerInteractionLogic : MonoBehaviour
         }
         return;
     }
-
+    // Do nothing (draw outlines)
     availableInteractions.Sort(new SortByProximity(transform));
     GameObject nearestObject = availableInteractions[0];
 
@@ -70,7 +72,7 @@ public class PlayerInteractionLogic : MonoBehaviour
         
         currentPlayerInteraction = nearestObject;
     }
-
+    // Pick Up
     if (InputSystem.actions.FindAction("Interact").triggered && currentPlayerInteraction != null)
     {
         if (currentPlayerInteraction.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)

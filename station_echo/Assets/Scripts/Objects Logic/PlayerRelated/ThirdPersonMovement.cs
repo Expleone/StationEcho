@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Cinemachine;
 
+[DefaultExecutionOrder(-25)]
 public class ThirdPersonMovement : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -45,7 +46,7 @@ public class ThirdPersonMovement : MonoBehaviour
 
     float fallingTime = 0f;
 
-    public Vector3 GetMovement()
+    public Vector3 GetVelocity()
     {
         return controller.velocity;
     }
@@ -104,15 +105,15 @@ public class ThirdPersonMovement : MonoBehaviour
             return true;
         }
     }
-    
+
 
     private void OnDrawGizmos()
     {
         // Only draw in the editor
-        if (Application.isPlaying) 
+        if (Application.isPlaying)
         {
             // Set the color for the cast
-            Gizmos.color = Color.yellow; 
+            Gizmos.color = Color.yellow;
 
             // Draw the start sphere
             //Gizmos.DrawWireSphere(transform.position, groundCheckRadius);
@@ -120,7 +121,7 @@ public class ThirdPersonMovement : MonoBehaviour
             if (isHit)
             {
                 // If hit, change color to visualize success
-                Gizmos.color = Color.red; 
+                Gizmos.color = Color.red;
 
                 // Calculate the center of the sphere at the moment of impact
                 Vector3 hitSphereCenter = transform.position + Physics.gravity.normalized * groundHit.distance;
@@ -141,7 +142,7 @@ public class ThirdPersonMovement : MonoBehaviour
                 // If no hit, draw the full cast distance (from start sphere's center)
                 Vector3 endPosition = transform.position + Physics.gravity.normalized * (controller.height / 2f - controller.radius + 0.1f);
                 Gizmos.DrawLine(transform.position, endPosition);
-                
+
                 // Draw a wire sphere at the max distance to show the sweep end
                 Gizmos.DrawWireSphere(endPosition, groundCheckRadius);
             }
@@ -160,18 +161,18 @@ public class ThirdPersonMovement : MonoBehaviour
         wasRunning = false;
     }
 
-    
-        
-        
+
+
+
 
     // Update is called once per frame
     void Update()
     {
-        
+
         _direction2d = InputSystem.actions.FindAction("Move").ReadValue<Vector2>();
         _sprintHeld = InputSystem.actions.FindAction("Sprint").IsPressed();
 
-        
+
         if (InputSystem.actions.FindAction("Jump").triggered)
         {
             _jumpTriggered = true;
@@ -188,11 +189,11 @@ public class ThirdPersonMovement : MonoBehaviour
         Vector3 platformDelta = moveableObject.GetPropagationMovement();
 
         isGrounded = IsGrounded();
-        
-        
+
+
         if (isGrounded && Vector3.Dot(verticalVelocity, Physics.gravity.normalized) > 0)
         {
-            verticalVelocity = Physics.gravity / 3f; 
+            verticalVelocity = Physics.gravity / 3f;
             doubleJumpUsed = false;
             fallingTime = 0f;
         }
@@ -212,14 +213,14 @@ public class ThirdPersonMovement : MonoBehaviour
             _jumpTriggered = false;
         }
 
-        
+
         if (!isGrounded)
         {
-            fallingTime += Time.fixedDeltaTime; 
-            verticalVelocity += Physics.gravity * Time.fixedDeltaTime; 
+            fallingTime += Time.fixedDeltaTime;
+            verticalVelocity += Physics.gravity * Time.fixedDeltaTime;
         }
 
-        
+
         if (Vector3.Dot(verticalVelocity, Physics.gravity) < 0 && !canMoveUpwards())
         {
             verticalVelocity = Vector3.zero;
@@ -231,7 +232,7 @@ public class ThirdPersonMovement : MonoBehaviour
         Vector3 direction = new Vector3(_direction2d.x, 0f, _direction2d.y).normalized;
         Vector3 horizontalDelta = Vector3.zero;
 
-        
+
         float currentSpeed = _sprintHeld ? 10f : 6f;
 
         if (direction.magnitude >= 0.1f)
@@ -243,12 +244,12 @@ public class ThirdPersonMovement : MonoBehaviour
             transform.rotation = Quaternion.Euler(currentRotation.x, angle, currentRotation.z);
 
             float inAirCorrection = isGrounded ? 1f : 0.5f;
-            
+
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             horizontalDelta = moveDir * (currentSpeed * Time.fixedDeltaTime * inAirCorrection);
         }
 
-        
+
         Vector3 finalDelta = horizontalDelta + verticalDelta + platformDelta;
         controller.Move(finalDelta);
 
@@ -256,13 +257,16 @@ public class ThirdPersonMovement : MonoBehaviour
     }
     private void setAnimation(float magnitude, bool isRunning)
     {
-        if (isRunning && magnitude >= 0.1f){
-            if(wasMaterialChanged == false){
+        if (isRunning && magnitude >= 0.1f)
+        {
+            if (wasMaterialChanged == false)
+            {
                 swapper.SetMaterial(0, "eyes_run");
                 wasMaterialChanged = true;
             }
         }
-        else{
+        else
+        {
             swapper.SetMaterial(0, "eyes_idle");
             wasMaterialChanged = false;
         }

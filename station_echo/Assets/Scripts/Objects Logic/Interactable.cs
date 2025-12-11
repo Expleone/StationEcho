@@ -23,6 +23,10 @@ public class Interactable : MonoBehaviour
     {
         bearerTransform = bearer;
     }
+    public bool IsBeingHeld()
+    {
+        return bearerTransform != null;
+    }
     public Transform GetBearerTransform()
     {
         return bearerTransform;

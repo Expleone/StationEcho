@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using NUnit.Framework;
+using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-
+[DefaultExecutionOrder(-50)]
 public class PlayerInteractionLogic : MonoBehaviour
 {
     [SerializeField] public LayerMask layerMask;
@@ -19,79 +21,77 @@ public class PlayerInteractionLogic : MonoBehaviour
     public OutlineAdder outlineAdder;
     
     private GameObject currentPlayerInteraction = null;
-    private bool heldGravityMode = false;
+    private bool IsDroped  = false;
+
 
     private Material[] originalMaterials;
     void Start()
     {
+        characterController = GetComponent<CharacterController>();
         outlineAdder = GetComponent<OutlineAdder>();
     }
 
     void Update()
-{
-    if (heldRb)
     {
-        if (currentPlayerInteraction != null)
+        if (heldRb)
         {
-            outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
-            currentPlayerInteraction = null;
-        }
-        
-        if (InputSystem.actions.FindAction("Interact").triggered)
-        {
-            heldRb.GetComponent<Interactable>().SetBearerTransform(null);
-            heldRb.transform.SetParent(null);
-            heldRb.useGravity = true;
-            heldRb.linearVelocity = Vector3.zero;
-            heldRb = null;
-        }
-        return; 
-    }
-
-    if (availableInteractions.Count == 0)
-    {
-        if (currentPlayerInteraction != null)
-        {
-            outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
-            currentPlayerInteraction = null;
-        }
-        return;
-    }
-
-    availableInteractions.Sort(new SortByProximity(transform));
-    GameObject nearestObject = availableInteractions[0];
-
-    if (nearestObject != currentPlayerInteraction)
-    {
-        if (currentPlayerInteraction != null)
-        {
-            outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
-        }
-
-        outlineAdder.ApplyOutline(nearestObject.transform);
-        
-        currentPlayerInteraction = nearestObject;
-    }
-
-    if (InputSystem.actions.FindAction("Interact").triggered && currentPlayerInteraction != null)
-    {
-        if (currentPlayerInteraction.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)
-        {
-            heldRb = currentPlayerInteraction.GetComponent<Rigidbody>();
-            heldRb.GetComponent<Interactable>().SetBearerTransform(transform);
-            heldRb.transform.SetParent(null);
-            heldRb.useGravity = false;
-            heldRb.rotation = Quaternion.identity;
+            if (currentPlayerInteraction != null)
+            {
+                outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
+                currentPlayerInteraction = null;
+            }
             
-            outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
-            currentPlayerInteraction = null; 
+            if (InputSystem.actions.FindAction("Interact").triggered)
+            {
+                IsDroped = true;
+            }
+            return; 
         }
-        else
+
+        if (availableInteractions.Count == 0)
         {
-            currentPlayerInteraction.GetComponent<Interactable>().Interact();
+            if (currentPlayerInteraction != null)
+            {
+                outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
+                currentPlayerInteraction = null;
+            }
+            return;
+        }
+
+        availableInteractions.Sort(new SortByProximity(transform));
+        GameObject nearestObject = availableInteractions[0];
+
+        if (nearestObject != currentPlayerInteraction)
+        {
+            if (currentPlayerInteraction != null)
+            {
+                outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
+            }
+
+            outlineAdder.ApplyOutline(nearestObject.transform);
+            
+            currentPlayerInteraction = nearestObject;
+        }
+
+        if (InputSystem.actions.FindAction("Interact").triggered && currentPlayerInteraction != null)
+        {
+            if (currentPlayerInteraction.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)
+            {
+                heldRb = currentPlayerInteraction.GetComponent<Rigidbody>();
+                heldRb.GetComponent<Interactable>().SetBearerTransform(transform);
+                heldRb.transform.SetParent(null);
+                heldRb.useGravity = false;
+                heldRb.rotation = Quaternion.identity;
+                heldRb.angularVelocity = Vector3.zero;
+                outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
+                currentPlayerInteraction = null; 
+            }
+            else
+            {
+                currentPlayerInteraction.GetComponent<Interactable>().Interact();
+            }
         }
     }
-}
 
 
     void FixedUpdate()
@@ -108,6 +108,13 @@ public class PlayerInteractionLogic : MonoBehaviour
 
     void DropLogic()
     {
+        if (IsDroped)
+        {
+            DropObject();
+            IsDroped = false;
+            return;
+        }
+
         if(Physics.gravity == new Vector3(0, 0, 1))
         {
             float bottomY = transform.position.y - transform.localScale.y / 2;
@@ -115,10 +122,7 @@ public class PlayerInteractionLogic : MonoBehaviour
 
             if(upperY + 0.1f < bottomY)
             {
-                heldRb.transform.SetParent(null);
-                heldRb.useGravity = true;
-                heldRb.linearVelocity = Vector3.zero;
-                heldRb = null;
+                DropObject();
             }
         }
         else if (Physics.gravity == new Vector3(0, 0, -1))
@@ -128,13 +132,24 @@ public class PlayerInteractionLogic : MonoBehaviour
 
             if(upperY + 0.1f < bottomY)
             {
-                heldRb.transform.SetParent(null);
-                heldRb.useGravity = true;
-                heldRb.linearVelocity = Vector3.zero;
-                heldRb = null;
+                DropObject();
             }
         }
     }
+
+    void DropObject()
+    {
+        heldRb.GetComponent<Interactable>().SetBearerTransform(null);
+        heldRb.transform.SetParent(null);
+        heldRb.useGravity = true;
+        heldRb.linearVelocity = Vector3.zero;
+        heldRb.angularVelocity = Vector3.zero;
+        heldRb.AddForce(characterController.velocity, ForceMode.VelocityChange);
+        // print ("Dropped with velocity: " + characterController.velocity);
+        heldRb = null;
+    }
+
+    
 
 
 

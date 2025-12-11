@@ -173,7 +173,7 @@ public class Dispenser : MonoBehaviour
         {
             rbInstance.AddForce(1f * (dispensePoint.position - rbInstance.position), ForceMode.Acceleration);
         }
-    }
+    } 
 
     void Update()
     {

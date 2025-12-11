@@ -23,6 +23,7 @@ public class ThirdPersonMovement : MonoBehaviour
     public LayerMask groundMask;
     private bool isHit;
     private bool isGrounded;
+    private float GroundedTimestamp = 0f;
 
     bool wasMaterialChanged = false;
     RaycastHit groundHit;
@@ -31,12 +32,17 @@ public class ThirdPersonMovement : MonoBehaviour
     Vector3 previousHitedObjectPosition;
     Vector3 currentHitedObjectPosition;
 
-    Vector3 lastVelocityOfGroundedObject;
+    [SerializeField] float baseHorizontalAcceleration = 10f;
+    [SerializeField] float midAirHorizontalAcceleration = 5f;
+    [SerializeField] float horizontalDeceleration = 15f;
+    [SerializeField] float maxRunSpeed = 6f;
+    [SerializeField] float maxWalkSpeed = 3f;
+    float currentMaxSpeed = 0f;
     private bool doubleJumpUsed = false;
     private Animator animator;
     private MaterialSwapper swapper;
-    public bool wasRunning;
-    Vector3 verticalVelocity;
+    Vector3 verticalVelocity = Vector3.zero;
+    Vector3 horizontalVelocity = Vector3.zero;
 
     private Vector2 _direction2d;
     private bool _sprintHeld;
@@ -83,6 +89,7 @@ public class ThirdPersonMovement : MonoBehaviour
         if (isHit)
         {
             currentHitedObjectPosition = groundHit.collider.transform.position;
+            GroundedTimestamp = Time.time;
         }
         return isHit;
     }
@@ -158,7 +165,6 @@ public class ThirdPersonMovement : MonoBehaviour
 
         animator = mesh.GetComponent<Animator>();
         swapper = mesh.GetComponentInChildren<MaterialSwapper>();
-        wasRunning = false;
     }
 
 
@@ -200,12 +206,12 @@ public class ThirdPersonMovement : MonoBehaviour
 
         if (_jumpTriggered)
         {
-            if (isGrounded)
+            if (Time.time - GroundedTimestamp < 0.2f)
             {
                 verticalVelocity = -Physics.gravity.normalized * jumpSpeed;
                 animator.SetTrigger("jump");
             }
-            else if (!isGrounded && !doubleJumpUsed)
+            else if (!(Time.time - GroundedTimestamp < 0.2f) && !doubleJumpUsed)
             {
                 verticalVelocity = -jumpSpeed * Physics.gravity.normalized;
                 doubleJumpUsed = true;
@@ -233,7 +239,6 @@ public class ThirdPersonMovement : MonoBehaviour
         Vector3 horizontalDelta = Vector3.zero;
 
 
-        float currentSpeed = _sprintHeld ? 10f : 6f;
 
         if (direction.magnitude >= 0.1f)
         {
@@ -243,18 +248,56 @@ public class ThirdPersonMovement : MonoBehaviour
             Vector3 currentRotation = transform.eulerAngles;
             transform.rotation = Quaternion.Euler(currentRotation.x, angle, currentRotation.z);
 
-            float inAirCorrection = isGrounded ? 1f : 0.5f;
-
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            horizontalDelta = moveDir * (currentSpeed * Time.fixedDeltaTime * inAirCorrection);
+            CalculateCurrentMaxSpeed(isGrounded);
+            CalculateHorizontalVelocity(moveDir, isGrounded);
+            horizontalDelta = horizontalVelocity * Time.fixedDeltaTime;
+        }
+        else
+        {
+            if (isGrounded)
+            {
+                horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, Vector3.zero, horizontalDeceleration * Time.fixedDeltaTime);
+                horizontalDelta = horizontalVelocity * Time.fixedDeltaTime;
+            }else{
+                horizontalDelta = horizontalVelocity * Time.fixedDeltaTime;
+            }
         }
 
+        print(horizontalVelocity.magnitude);
 
         Vector3 finalDelta = horizontalDelta + verticalDelta + platformDelta;
         controller.Move(finalDelta);
 
         setAnimation(direction.magnitude, _sprintHeld);
     }
+
+    private void CalculateCurrentMaxSpeed(bool isGrounded){
+        if (isGrounded){
+            if (_sprintHeld){
+                currentMaxSpeed = maxRunSpeed;
+            }
+            else{
+                currentMaxSpeed = maxWalkSpeed;
+            }
+        }
+        else{
+            if (_sprintHeld){
+                currentMaxSpeed = Mathf.MoveTowards(currentMaxSpeed, maxWalkSpeed*1.2f, 60 * Time.fixedDeltaTime);
+            }
+            else{
+                currentMaxSpeed = Mathf.MoveTowards(currentMaxSpeed, maxWalkSpeed, 60 * Time.fixedDeltaTime);
+            }
+            
+        }
+    }
+
+    private void CalculateHorizontalVelocity(Vector3 moveDir, bool isGrounded){
+        Vector3 targetVelocity = moveDir * currentMaxSpeed;
+        float acceleration = isGrounded ? baseHorizontalAcceleration : midAirHorizontalAcceleration;
+        horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, targetVelocity, acceleration * Time.fixedDeltaTime);
+    }
+
     private void setAnimation(float magnitude, bool isRunning)
     {
         if (isRunning && magnitude >= 0.1f)

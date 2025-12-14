@@ -909,6 +909,7 @@ MonoBehaviour:
   plates: []
   switches: []
   buttons: []
+  dispensers: []
 --- !u!4 &121971802
 Transform:
   m_ObjectHideFlags: 0
@@ -1311,6 +1312,8 @@ MonoBehaviour:
   IsLocked: 0
   IsOpen: 0
   Speed: 1
+  UseTimeBasedMovement: 0
+  OpenTime: 1
   SlideDistance: 2.5
   SlideDirection: {x: 1, y: 0, z: 0}
 --- !u!4 &201286328 stripped
@@ -2357,6 +2360,8 @@ MonoBehaviour:
   IsLocked: 0
   IsOpen: 0
   Speed: 1
+  UseTimeBasedMovement: 0
+  OpenTime: 1
   SlideDistance: 3
   SlideDirection: {x: -1, y: 0, z: 0}
 --- !u!1001 &553550514
@@ -3223,6 +3228,74 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 400986453}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &825524377
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1885794623}
+    m_Modifications:
+    - target: {fileID: 3162619819733507803, guid: 7e462b611e60826ecac92fc42cc29e19,
+        type: 3}
+      propertyPath: m_Name
+      value: Dispenser
+      objectReference: {fileID: 0}
+    - target: {fileID: 8863287947175557748, guid: 7e462b611e60826ecac92fc42cc29e19,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -585.9572
+      objectReference: {fileID: 0}
+    - target: {fileID: 8863287947175557748, guid: 7e462b611e60826ecac92fc42cc29e19,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -2.933
+      objectReference: {fileID: 0}
+    - target: {fileID: 8863287947175557748, guid: 7e462b611e60826ecac92fc42cc29e19,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -839.7992
+      objectReference: {fileID: 0}
+    - target: {fileID: 8863287947175557748, guid: 7e462b611e60826ecac92fc42cc29e19,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8863287947175557748, guid: 7e462b611e60826ecac92fc42cc29e19,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8863287947175557748, guid: 7e462b611e60826ecac92fc42cc29e19,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8863287947175557748, guid: 7e462b611e60826ecac92fc42cc29e19,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8863287947175557748, guid: 7e462b611e60826ecac92fc42cc29e19,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8863287947175557748, guid: 7e462b611e60826ecac92fc42cc29e19,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8863287947175557748, guid: 7e462b611e60826ecac92fc42cc29e19,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7e462b611e60826ecac92fc42cc29e19, type: 3}
 --- !u!1 &832427099
 GameObject:
   m_ObjectHideFlags: 0
@@ -3260,6 +3333,7 @@ MonoBehaviour:
   plates: []
   switches: []
   buttons: []
+  dispensers: []
 --- !u!4 &832427101
 Transform:
   m_ObjectHideFlags: 0
@@ -3954,6 +4028,12 @@ RectTransform:
   m_AnchoredPosition: {x: 1404.5675, y: -12.267836}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!4 &1022062512 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8863287947175557748, guid: 7e462b611e60826ecac92fc42cc29e19,
+    type: 3}
+  m_PrefabInstance: {fileID: 825524377}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1025963116 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 572129025890592427, guid: c416acf3e83509818bdf7bde09d25335,
@@ -6791,6 +6871,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1022062512}
   - {fileID: 382203088}
   - {fileID: 92914373}
   - {fileID: 1546649698}
@@ -6857,6 +6938,8 @@ MonoBehaviour:
   IsLocked: 0
   IsOpen: 0
   Speed: 1
+  UseTimeBasedMovement: 0
+  OpenTime: 1
   SlideDistance: 3
   SlideDirection: {x: -1, y: 0, z: 0}
 --- !u!65 &1896692985
@@ -7431,6 +7514,8 @@ MonoBehaviour:
   IsLocked: 0
   IsOpen: 0
   Speed: 2
+  UseTimeBasedMovement: 0
+  OpenTime: 1
   SlideDistance: 2
   SlideDirection: {x: 0, y: 0, z: -1}
 --- !u!65 &2011326462

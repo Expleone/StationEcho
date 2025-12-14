@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using NUnit.Framework;
 
 public class Button : MonoBehaviour
 {
@@ -66,7 +67,7 @@ public class Button : MonoBehaviour
         }
     }
 
-    private void Press()
+    public void Press()
     {
         if (animationCoroutine != null)
             StopCoroutine(animationCoroutine);
@@ -92,8 +93,10 @@ public class Button : MonoBehaviour
         Unpress();
     }
 
-    private void Unpress()
+    public void Unpress()
     {
+        if(!IsPressed)
+            return;
         if (animationCoroutine != null)
             StopCoroutine(animationCoroutine);
 

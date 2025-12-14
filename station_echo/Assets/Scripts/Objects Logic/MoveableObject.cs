@@ -8,10 +8,11 @@ enum ObjectType
     Unpickable,
     Player
 }
-
+[DefaultExecutionOrder(0)]
 public class MoveableObject : MonoBehaviour
 {
     Vector3 propagationMovement;
+    Vector3 selfVelosity;
     bool propagate = true;
     ObjectType objectType;
 
@@ -60,7 +61,7 @@ public class MoveableObject : MonoBehaviour
     {
         if (objectType == ObjectType.Platform)
         {
-            propagationMovement = platformLogic.GetPropagationMovement(); 
+            propagationMovement = platformLogic.GetPropagationMovement();
         }
 
         if (objectType == ObjectType.Player)
@@ -82,34 +83,16 @@ public class MoveableObject : MonoBehaviour
             if (propagationMovement != Vector3.zero)
             {
                 thirdPersonMovement.Move(propagationMovement);
+                // print("CharacterController velocity: " + thirdPersonMovement.GetVelocity());
             }
         }
-        else if (objectType == ObjectType.Pickable)
+        else if (objectType == ObjectType.Unpickable || objectType == ObjectType.Pickable)
         {
-            if (this.transform.parent != null && this.transform.parent.GetComponent<ThirdPersonMovement>() != null)
+            if (objectType == ObjectType.Pickable && this.gameObject.GetComponent<Interactable>().IsBeingHeld())
             {
-                propagationMovement = this.transform.parent.GetComponent<ThirdPersonMovement>().GetMovement() * Time.fixedDeltaTime;
-                propagate = false;
+                propagationMovement = Vector3.zero;
+                return;
             }
-            else
-            {
-                propagate = true;
-                if (CheckGround())
-                {
-                    MoveableObject groundMoveableObject = groundHit.transform.gameObject.GetComponent<MoveableObject>();
-                    if (groundMoveableObject != null)
-                    {
-                        propagationMovement = groundMoveableObject.GetPropagationMovement();
-                    }
-                    else
-                    {
-                        propagationMovement = Vector3.zero;
-                    }
-                }
-            }
-        }
-        else if (objectType == ObjectType.Unpickable)
-        {
             if (CheckGround())
             {
                 MoveableObject groundMoveableObject = groundHit.transform.gameObject.GetComponent<MoveableObject>();
@@ -128,7 +111,7 @@ public class MoveableObject : MonoBehaviour
         {
             if (propagate && rb != null && propagationMovement != Vector3.zero)
             {
-                rb.MovePosition(rb.position + propagationMovement);
+                rb.Move(rb.position + propagationMovement, rb.rotation);
             }
         }
     }

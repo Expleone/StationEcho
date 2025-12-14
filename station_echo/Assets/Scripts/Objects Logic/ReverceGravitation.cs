@@ -8,12 +8,12 @@ public class ReverceGravitation : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        rb.useGravity = false;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        rb.AddForce(-Physics.gravity, ForceMode.Acceleration);
+        if (rb.useGravity)
+        rb.AddForce(-2 * Physics.gravity, ForceMode.Acceleration);
     }
 }

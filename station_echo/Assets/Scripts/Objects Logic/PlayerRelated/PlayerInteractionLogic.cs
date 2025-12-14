@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using NUnit.Framework;
+using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-
+[DefaultExecutionOrder(-50)]
 public class PlayerInteractionLogic : MonoBehaviour
 {
     [SerializeField] public LayerMask layerMask;
@@ -16,82 +18,80 @@ public class PlayerInteractionLogic : MonoBehaviour
     public List<GameObject> availableInteractions = new List<GameObject>();
     public List<GameObject> unavailableInteractions = new List<GameObject>();
     private Rigidbody heldRb = null;
-    public Material outlineMaterial;
+    public OutlineAdder outlineAdder;
+    
     private GameObject currentPlayerInteraction = null;
-    private bool heldGravityMode = false;
+    private bool IsDroped  = false;
+
 
     private Material[] originalMaterials;
     void Start()
     {
-    
+        characterController = GetComponent<CharacterController>();
+        outlineAdder = GetComponent<OutlineAdder>();
     }
 
     void Update()
-{
-    // Drop
-    if (heldRb)
     {
-        if (currentPlayerInteraction != null)
+        if (heldRb)
         {
-            RemoveOutline(currentPlayerInteraction.transform);
-            currentPlayerInteraction = null;
-        }
-       
-        if (InputSystem.actions.FindAction("Interact").triggered)
-        {
-            heldRb.transform.SetParent(null);
-            heldRb.useGravity = heldGravityMode;
-            heldRb.linearVelocity = Vector3.zero;
-            heldRb.angularVelocity = Vector3.zero;
-            heldRb = null;
-        }
-        return; 
-    }
-    // Do nothing (remove outlines)
-    if (availableInteractions.Count == 0)
-    {
-        if (currentPlayerInteraction != null)
-        {
-            RemoveOutline(currentPlayerInteraction.transform);
-            currentPlayerInteraction = null;
-        }
-        return;
-    }
-    // Do nothing (draw outlines)
-    availableInteractions.Sort(new SortByProximity(transform));
-    GameObject nearestObject = availableInteractions[0];
-
-    if (nearestObject != currentPlayerInteraction)
-    {
-        if (currentPlayerInteraction != null)
-        {
-            RemoveOutline(currentPlayerInteraction.transform);
-        }
-
-        ApplyOutline(nearestObject.transform);
-        
-        currentPlayerInteraction = nearestObject;
-    }
-    // Pick Up
-    if (InputSystem.actions.FindAction("Interact").triggered && currentPlayerInteraction != null)
-    {
-        if (currentPlayerInteraction.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)
-        {
-            heldRb = currentPlayerInteraction.GetComponent<Rigidbody>();
-            heldGravityMode = heldRb.useGravity;
-            heldRb.transform.SetParent(null);
-            heldRb.useGravity = false;
-            heldRb.rotation = Quaternion.identity;
+            if (currentPlayerInteraction != null)
+            {
+                outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
+                currentPlayerInteraction = null;
+            }
             
-            RemoveOutline(currentPlayerInteraction.transform);
-            currentPlayerInteraction = null; 
+            if (InputSystem.actions.FindAction("Interact").triggered)
+            {
+                IsDroped = true;
+            }
+            return; 
         }
-        else
+
+        if (availableInteractions.Count == 0)
         {
-            currentPlayerInteraction.GetComponent<Interactable>().Interact();
+            if (currentPlayerInteraction != null)
+            {
+                outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
+                currentPlayerInteraction = null;
+            }
+            return;
+        }
+
+        availableInteractions.Sort(new SortByProximity(transform));
+        GameObject nearestObject = availableInteractions[0];
+
+        if (nearestObject != currentPlayerInteraction)
+        {
+            if (currentPlayerInteraction != null)
+            {
+                outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
+            }
+
+            outlineAdder.ApplyOutline(nearestObject.transform);
+            
+            currentPlayerInteraction = nearestObject;
+        }
+
+        if (InputSystem.actions.FindAction("Interact").triggered && currentPlayerInteraction != null)
+        {
+            if (currentPlayerInteraction.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)
+            {
+                heldRb = currentPlayerInteraction.GetComponent<Rigidbody>();
+                heldRb.GetComponent<Interactable>().SetBearerTransform(transform);
+                heldRb.transform.SetParent(null);
+                heldRb.useGravity = false;
+                heldRb.rotation = Quaternion.identity;
+                heldRb.angularVelocity = Vector3.zero;
+                outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
+                currentPlayerInteraction = null; 
+            }
+            else
+            {
+                currentPlayerInteraction.GetComponent<Interactable>().Interact();
+            }
         }
     }
-}
 
 
     void FixedUpdate()
@@ -108,17 +108,21 @@ public class PlayerInteractionLogic : MonoBehaviour
 
     void DropLogic()
     {
+        if (IsDroped)
+        {
+            DropObject();
+            IsDroped = false;
+            return;
+        }
+
         if(Physics.gravity == new Vector3(0, 0, 1))
         {
             float bottomY = transform.position.y - transform.localScale.y / 2;
             float upperY = heldRb.transform.localScale.y / 2 + heldRb.transform.position.y;
 
-            if(upperY < bottomY)
+            if(upperY + 0.1f < bottomY)
             {
-                heldRb.transform.SetParent(null);
-                heldRb.useGravity = true;
-                heldRb.linearVelocity = Vector3.zero;
-                heldRb = null;
+                DropObject();
             }
         }
         else if (Physics.gravity == new Vector3(0, 0, -1))
@@ -126,15 +130,26 @@ public class PlayerInteractionLogic : MonoBehaviour
             float bottomY = heldRb.transform.localScale.y / 2 + heldRb.transform.position.y;
             float upperY = transform.position.y - transform.localScale.y / 2;
 
-            if(upperY < bottomY)
+            if(upperY + 0.1f < bottomY)
             {
-                heldRb.transform.SetParent(null);
-                heldRb.useGravity = true;
-                heldRb.linearVelocity = Vector3.zero;
-                heldRb = null;
+                DropObject();
             }
         }
     }
+
+    void DropObject()
+    {
+        heldRb.GetComponent<Interactable>().SetBearerTransform(null);
+        heldRb.transform.SetParent(null);
+        heldRb.useGravity = true;
+        heldRb.linearVelocity = Vector3.zero;
+        heldRb.angularVelocity = Vector3.zero;
+        heldRb.AddForce(characterController.velocity, ForceMode.VelocityChange);
+        // print ("Dropped with velocity: " + characterController.velocity);
+        heldRb = null;
+    }
+
+    
 
 
 
@@ -164,43 +179,6 @@ public class PlayerInteractionLogic : MonoBehaviour
         heldRb.linearVelocity = Vector3.Lerp(heldRb.linearVelocity, targetVelocity, 0.2f);
     }
 
-
-    void ApplyOutline(Transform target)
-    {
-        Renderer render = target.GetComponent<Renderer>();
-
-        if(render == null) render = target.GetComponentInChildren<Renderer>();
-        
-        if (render != null)
-        {
-            List<Material> materials = render.materials.ToList();
-
-            if (materials.Count > 0 && materials[materials.Count - 1].name.StartsWith(outlineMaterial.name))
-            {
-                return; 
-            }
-
-            materials.Add(outlineMaterial);
-            render.materials = materials.ToArray();
-        }
-    }
-
-    void RemoveOutline(Transform target)
-    {
-        Renderer render = target.GetComponent<Renderer>();
-        if(render == null) render = target.GetComponentInChildren<Renderer>();
-
-        if (render != null)
-        {
-            List<Material> materials = render.materials.ToList();
-
-            if (materials.Count > 1 && materials[materials.Count - 1].name.StartsWith(outlineMaterial.name)) 
-            {
-                materials.RemoveAt(materials.Count - 1);
-                render.materials = materials.ToArray();
-            }
-        }
-    }
 }
 
 

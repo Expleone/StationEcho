@@ -211,6 +211,7 @@ MonoBehaviour:
   plates: []
   switches: []
   buttons: []
+  dispensers: []
 --- !u!64 &4968947116904268562
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -269,7 +270,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 0d71f9a2cddad0d43833a1db7494a983,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.00077
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0d71f9a2cddad0d43833a1db7494a983,
         type: 3}
@@ -411,7 +412,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 1f31b693572afb9449dac47aef9238c7,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.00077
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1f31b693572afb9449dac47aef9238c7,
         type: 3}

@@ -169,7 +169,6 @@ public class ThirdPersonMovement : MonoBehaviour
     }
 
 
-
     void Awake()
     {
         controller = GetComponent<CharacterController>();

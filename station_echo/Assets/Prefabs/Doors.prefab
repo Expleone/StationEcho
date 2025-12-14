@@ -345,9 +345,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Door
   IsLocked: 0
   IsOpen: 0
-  Speed: 1
-  SlideDistance: 2
-  SlideDirection: {x: -1, y: 0, z: 0}
+  Speed: 0.032
+  UseTimeBasedMovement: 0
+  OpenTime: 1
+  SlideDistance: 0.016
+  SlideDirection: {x: 0, y: 1, z: 0}
 --- !u!64 &6435366057067970940
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -493,9 +495,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Door
   IsLocked: 0
   IsOpen: 0
-  Speed: 1
-  SlideDistance: 2
-  SlideDirection: {x: 1, y: 0, z: 0}
+  Speed: 0.026
+  UseTimeBasedMovement: 0
+  OpenTime: 1
+  SlideDistance: 0.013
+  SlideDirection: {x: 0, y: -1, z: 0}
 --- !u!64 &6857158927232689746
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -68,7 +68,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8f9f05a0e179e6e48b3cede433209c46, type: 2}
+  - {fileID: 2100000, guid: cddfe671002c02d4da09adfc81b154b7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -126,6 +126,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MaterialSwapper
   availableMaterials:
   - name: DEF
-    material: {fileID: 2100000, guid: 8f9f05a0e179e6e48b3cede433209c46, type: 2}
+    material: {fileID: 2100000, guid: cddfe671002c02d4da09adfc81b154b7, type: 2}
   - name: ACT
-    material: {fileID: 2100000, guid: d09ddd125cfa0f74ea68f5d068a976b3, type: 2}
+    material: {fileID: 2100000, guid: 902584399db62324485b005724ffc8a9, type: 2}

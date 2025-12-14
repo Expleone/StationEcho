@@ -46,6 +46,8 @@ public class ThirdPersonMovement : MonoBehaviour
 
     private Vector2 _direction2d;
     private bool _sprintHeld;
+
+    private bool wasSprinting = false;
     private bool _jumpTriggered;
 
     private MoveableObject moveableObject;
@@ -111,6 +113,16 @@ public class ThirdPersonMovement : MonoBehaviour
         {
             return true;
         }
+    }
+
+    bool CheckForward()
+    {
+        Vector3 castDir = horizontalVelocity.normalized;
+        float castDistance = controller.radius + 0.1f;
+        Vector3 castOrigin = controller.center;
+        bool isHitForward = Physics.CapsuleCast(castOrigin + transform.up * (controller.height - controller.radius) , castOrigin - transform.up * (controller.height - controller.radius), controller.radius, castDir, out RaycastHit hitForward, castDistance, groundMask);
+        return isHitForward;
+
     }
 
 
@@ -226,6 +238,9 @@ public class ThirdPersonMovement : MonoBehaviour
             verticalVelocity += Physics.gravity * Time.fixedDeltaTime;
         }
 
+        if (isGrounded){
+            wasSprinting = _sprintHeld;
+        }
 
         if (Vector3.Dot(verticalVelocity, Physics.gravity) < 0 && !canMoveUpwards())
         {
@@ -238,8 +253,12 @@ public class ThirdPersonMovement : MonoBehaviour
         Vector3 direction = new Vector3(_direction2d.x, 0f, _direction2d.y).normalized;
         Vector3 horizontalDelta = Vector3.zero;
 
+        // if (CheckForward()){
+        //     horizontalVelocity = Vector3.zero;
+        // }
 
-
+        
+        
         if (direction.magnitude >= 0.1f)
         {
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
@@ -260,11 +279,10 @@ public class ThirdPersonMovement : MonoBehaviour
                 horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, Vector3.zero, horizontalDeceleration * Time.fixedDeltaTime);
                 horizontalDelta = horizontalVelocity * Time.fixedDeltaTime;
             }else{
+                horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, Vector3.zero, (midAirHorizontalAcceleration) * Time.fixedDeltaTime);
                 horizontalDelta = horizontalVelocity * Time.fixedDeltaTime;
             }
         }
-
-        print(horizontalVelocity.magnitude);
 
         Vector3 finalDelta = horizontalDelta + verticalDelta + platformDelta;
         controller.Move(finalDelta);
@@ -282,11 +300,11 @@ public class ThirdPersonMovement : MonoBehaviour
             }
         }
         else{
-            if (_sprintHeld){
+            if (wasSprinting){
                 currentMaxSpeed = Mathf.MoveTowards(currentMaxSpeed, maxWalkSpeed*1.2f, 60 * Time.fixedDeltaTime);
             }
             else{
-                currentMaxSpeed = Mathf.MoveTowards(currentMaxSpeed, maxWalkSpeed, 60 * Time.fixedDeltaTime);
+                currentMaxSpeed = Mathf.MoveTowards(currentMaxSpeed, maxWalkSpeed*0.6f, 60 * Time.fixedDeltaTime);
             }
             
         }

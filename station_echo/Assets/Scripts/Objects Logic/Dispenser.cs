@@ -28,6 +28,11 @@ public class Dispenser : MonoBehaviour
     private bool isDispensing = false;
     private bool tryingToDispense = false;
 
+    private string activeMaterial = "active";
+    private string inactiveMaterial = "inactive";
+
+    [SerializeField] private MaterialSwapper materialSwapper;
+
     // #if UNITY_EDITOR
     private OutlineAdder outlineAdder;
     List<GameObject> outlinedObjects = new List<GameObject>();
@@ -120,6 +125,7 @@ public class Dispenser : MonoBehaviour
 
     private System.Collections.IEnumerator MovePanels()
     {
+        materialSwapper.SetMaterial(0, activeMaterial);
         barier.TurnOnBarier();
 
         yield return new WaitForSeconds(openDelay);
@@ -140,6 +146,7 @@ public class Dispenser : MonoBehaviour
 
         yield return new WaitForSeconds(panel1.OpenTime);
         barier.TurnOffBarier();
+        materialSwapper.SetMaterial(0, inactiveMaterial);
         rbInstance.useGravity = true; // Enable gravity after dispensing
         isDispensing = false;
         dispensePoint.localPosition = initialDispensePointPosition;

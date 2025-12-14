@@ -17,11 +17,13 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
     public bool allowedToMove = true;
     private float currentWaitTime = 0;
     private Vector3 linearVelocity = new Vector3(0, 0, 0);
+    private Vector3 linearVelocityGlobal = new Vector3(0, 0, 0);
     private Vector3 currentMovement = new Vector3(0, 0, 0);
+    private Vector3 currentMovementGlobal = new Vector3(0, 0, 0);
     private Vector3 extraPosition = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
     public Vector3 GetPropagationMovement()
     {
-        return currentMovement;
+        return currentMovementGlobal;
     }
     public List<GameObject> passengers = new List<GameObject>();
 
@@ -109,6 +111,7 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
                 if (!allowedToMove)
                 {
                     currentMovement = Vector3.zero;
+                    currentMovementGlobal = Vector3.zero;
                     return;
                 } 
                 currentWaitTime = 0;
@@ -121,6 +124,7 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
             if (!allowedToMove)
             {
                 currentMovement = Vector3.zero;
+                currentMovementGlobal = Vector3.zero;
                 return;
             } 
             else if (hasArrived())  //Check if the platform has reached the waypoint
@@ -130,12 +134,17 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
                 linearVelocity = new Vector3(0, 0, 0);
                 currentMovement = new Vector3(0, 0, 0);
 
+                linearVelocityGlobal = new Vector3(0, 0, 0);
+                currentMovementGlobal = new Vector3(0, 0, 0);
+
                 currentWaypoint = currentWaypoint + 1 >= waypointCount ? 0 : currentWaypoint + 1;
             }
             else
             {
                 currentMovement = linearVelocity * speed * Time.fixedDeltaTime;
                 platformObjectTransform.localPosition += currentMovement;
+
+                currentMovementGlobal = linearVelocityGlobal * speed * Time.fixedDeltaTime;
             }
         }
     }
@@ -148,6 +157,11 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
         Vector3 c = a - b;
         linearVelocity = new Vector3(c.x / c.magnitude, c.y / c.magnitude, c.z / c.magnitude);
         moving = true;
+
+        a = waypointTransforms[currentWaypoint].position;
+        b = platformObjectTransform.position;
+        c = a - b;
+        linearVelocityGlobal = new Vector3(c.x / c.magnitude, c.y / c.magnitude, c.z / c.magnitude);
     }
 
 

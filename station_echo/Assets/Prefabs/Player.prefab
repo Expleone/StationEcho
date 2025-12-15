@@ -487,6 +487,7 @@ GameObject:
   - component: {fileID: 1582097795134907659}
   - component: {fileID: 243083713468385899}
   - component: {fileID: 7149835036420189459}
+  - component: {fileID: 5565347362003039799}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -634,6 +635,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OutlineAdder
   outlineMaterial: {fileID: 2100000, guid: 701b52f1be66243b48db869c63708099, type: 2}
+--- !u!114 &5565347362003039799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6990248578237922844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c79e3b406e2f8a4aac0048fda9a5e39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerData
 --- !u!1 &9159276762381611377
 GameObject:
   m_ObjectHideFlags: 0

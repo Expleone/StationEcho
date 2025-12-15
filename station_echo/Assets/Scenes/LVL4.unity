@@ -42189,7 +42189,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6990248578237922844, guid: 0ac714e99513365858dab395c05e4792,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 834098007}
   m_SourcePrefab: {fileID: 100100000, guid: 0ac714e99513365858dab395c05e4792, type: 3}
 --- !u!4 &834098004 stripped
 Transform:
@@ -42203,6 +42207,24 @@ CharacterController:
     type: 3}
   m_PrefabInstance: {fileID: 834098003}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &834098006 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6990248578237922844, guid: 0ac714e99513365858dab395c05e4792,
+    type: 3}
+  m_PrefabInstance: {fileID: 834098003}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &834098007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 834098006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c79e3b406e2f8a4aac0048fda9a5e39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerData
 --- !u!1 &835267782
 GameObject:
   m_ObjectHideFlags: 0

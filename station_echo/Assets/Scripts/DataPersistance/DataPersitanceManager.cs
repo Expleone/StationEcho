@@ -17,6 +17,7 @@ public class DataPersitanceManager : MonoBehaviour
     private FileDataHandler dataHandler;
     private bool isNewGame = false;
     private string levelId = "";
+    private Vector3 gravityNormal;
     public static DataPersitanceManager instance { get; private set; }
 
     private void Awake()
@@ -27,6 +28,7 @@ public class DataPersitanceManager : MonoBehaviour
             Destroy(this.gameObject);
             return;
         }
+        gravityNormal = Physics.gravity;
         DontDestroyOnLoad(gameObject);
         instance = this;
         this.dataHandler = new FileDataHandler(Application.persistentDataPath, fileName);
@@ -78,6 +80,9 @@ public class DataPersitanceManager : MonoBehaviour
         {
             gameData.levels[levelId] = new LevelData();
         }
+
+        // TODO: Make a proper fix for reloading with gravity flipped
+        SetGravityNormal();
 
         gameData.currentLevel = levelId;
         if (isNewGame || gameData.levels[levelId].isCompleted)
@@ -154,5 +159,15 @@ public class DataPersitanceManager : MonoBehaviour
     {
         if (gameData != null && !string.IsNullOrEmpty(gameData.currentLevel)) return gameData.currentLevel;
         return "";
+    }
+
+    private void SetGravityNormal()
+    {
+        if (gravityNormal == Vector3.zero)
+        {
+            Debug.LogError("gravityNormal vector was not found");
+            return;
+        }
+        Physics.gravity = gravityNormal;
     }
 }

@@ -52,6 +52,8 @@ public class ThirdPersonMovement : MonoBehaviour
 
     private MoveableObject moveableObject;
 
+    public float maxFallSpeed = float.MaxValue;
+
     float fallingTime = 0f;
 
     public Vector3 GetVelocity()
@@ -235,6 +237,11 @@ public class ThirdPersonMovement : MonoBehaviour
         {
             fallingTime += Time.fixedDeltaTime;
             verticalVelocity += Physics.gravity * Time.fixedDeltaTime;
+            // Used by trigger in LVL4
+            if (verticalVelocity.y < -maxFallSpeed)
+            {
+                verticalVelocity.y = -maxFallSpeed;
+            }
         }
 
         if (isGrounded){
@@ -251,10 +258,6 @@ public class ThirdPersonMovement : MonoBehaviour
 
         Vector3 direction = new Vector3(_direction2d.x, 0f, _direction2d.y).normalized;
         Vector3 horizontalDelta = Vector3.zero;
-
-        // if (CheckForward()){
-        //     horizontalVelocity = Vector3.zero;
-        // }
 
         
         

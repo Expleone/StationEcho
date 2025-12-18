@@ -65,6 +65,10 @@ public class DataPersitanceManager : MonoBehaviour
     public void NewGame()
     {
         this.gameData = new GameData();
+        if (!gameData.levels.ContainsKey(levelId))
+        {
+            gameData.levels[levelId] = new LevelData();
+        }
         this.isNewGame = true;
     }
 
@@ -82,7 +86,7 @@ public class DataPersitanceManager : MonoBehaviour
         }
 
         // TODO: Make a proper fix for reloading with gravity flipped
-        SetGravityNormal();
+        // SetGravityNormal();
 
         gameData.currentLevel = levelId;
         if (isNewGame || gameData.levels[levelId].isCompleted)
@@ -141,7 +145,11 @@ public class DataPersitanceManager : MonoBehaviour
 
     public void SetCurrentLevelAsCompleted()
     {
-        gameData.levels[levelId].isCompleted = true;
+        if (gameData.levels[levelId] != null) gameData.levels[levelId].isCompleted = true;
+        else
+        {
+            Debug.Log("Could not find level data to mark as completed");
+        }
     }
     private List<IDataPersistance> FindAllDataPersistanceObjects()
     {

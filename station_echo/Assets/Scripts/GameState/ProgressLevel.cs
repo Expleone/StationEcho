@@ -30,7 +30,7 @@ public class ProgressLevel : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             GameManager.Instance.UpdateGameState(GameState.Game);
-            DataPersitanceManager.instance.SaveGame();
+            DataPersitanceManager.instance.NewGame();
             DataPersitanceManager.instance.SetCurrentLevelAsCompleted();
             SceneManager.LoadScene("LVL" + (currenLevelId + 1));
         }

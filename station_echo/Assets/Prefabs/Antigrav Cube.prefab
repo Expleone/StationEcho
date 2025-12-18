@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 3791080317898383468}
   - component: {fileID: 4614887419768657362}
   - component: {fileID: 364113430949939825}
+  - component: {fileID: 2919648212699101732}
   m_Layer: 3
   m_Name: Antigrav Cube
   m_TagString: Untagged
@@ -182,3 +183,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8199584ac49dd2129a343f709b84c445, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ReverceGravitation
+--- !u!114 &2919648212699101732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8820150397186373277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60df3153ac765204285c5b33319fd32d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MovableObjectData
+  id: 

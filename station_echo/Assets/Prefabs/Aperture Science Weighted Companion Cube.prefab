@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2427881672534120120}
   - component: {fileID: 2961224826362359576}
   - component: {fileID: 9148474687352030769}
+  - component: {fileID: -2473776032595335753}
   m_Layer: 3
   m_Name: Aperture Science Weighted Companion Cube
   m_TagString: Untagged
@@ -121,6 +122,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &-2473776032595335753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5204203672814303804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60df3153ac765204285c5b33319fd32d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MovableObjectData
+  id: 
 --- !u!1001 &8649677274618022055
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -2,18 +2,22 @@ using UnityEngine;
 
 public class gravTriggerScript : MonoBehaviour
 {
-    void Start()
-    {
-        
-    }
+    public float maxFallSpeed = 6;
+    public bool first = false;
 
-    void Update()
-    {
-        
-    }
 
     void OnTriggerEnter(Collider other)
     {
-        Physics.gravity = new Vector3(0f, -1f, 0f);
+        if(!other.gameObject.GetComponent<ThirdPersonMovement>()) return;
+        
+        if (first)
+        {
+            other.gameObject.GetComponent<ThirdPersonMovement>().maxFallSpeed = maxFallSpeed;
+        }
+        else
+        {
+            other.gameObject.GetComponent<ThirdPersonMovement>().maxFallSpeed = float.MaxValue;
+        }
+        Destroy(gameObject);
     }
 }

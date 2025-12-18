@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameoverZone : MonoBehaviour
 {
+    public bool destroyPickable = true;
 
     private MenuManager menuManager;
 
@@ -20,7 +21,7 @@ public class GameoverZone : MonoBehaviour
             menuManager.LoadGameStateGame();
         }
 
-        if (other.GetComponent<Interactable>() != null && other.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)
+        if (destroyPickable && other.GetComponent<Interactable>() != null && other.GetComponent<Interactable>().GetInteractionType() == InteractionType.Pickable)
         {
             Destroy(other.gameObject);
         }   

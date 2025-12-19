@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 6078557930252229437}
   - component: {fileID: 5852297046064343295}
   - component: {fileID: 6455066751123064335}
+  - component: {fileID: 1623717435501719917}
   m_Layer: 6
   m_Name: PlayerCamera
   m_TagString: Untagged
@@ -320,6 +321,25 @@ MonoBehaviour:
     NearLimit: 5
     FarLimit: 30
     MaxQualityBoost: 0.2
+--- !u!114 &1623717435501719917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1677926466068101267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0544e7b14d134a1449e61175446cfb95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineRecomposer
+  ApplyAfter: 0
+  Tilt: 0
+  Pan: 0
+  Dutch: 0
+  ZoomScale: 1
+  FollowAttachment: 1
+  LookAtAttachment: 1
 --- !u!1 &2471133862076855610
 GameObject:
   m_ObjectHideFlags: 0
@@ -470,6 +490,7 @@ MonoBehaviour:
   offset: {x: 0, y: 0.6, z: 0}
   newOffset: {x: 0, y: 0, z: 0}
   smoothTime: 2
+  currentGravityDirection: 1
   cinemachineCamera: {fileID: 1712080188249064983}
   playerMesh: {fileID: 4911456367078677694}
 --- !u!1 &6990248578237922844
@@ -567,10 +588,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 9
   baseHorizontalAcceleration: 30
-  midAirHorizontalAcceleration: 7
+  midAirHorizontalAcceleration: 14
   horizontalDeceleration: 100
   maxRunSpeed: 12
   maxWalkSpeed: 6
+  maxFallSpeed: 3.4028235e+38
 --- !u!114 &645978774937072571
 MonoBehaviour:
   m_ObjectHideFlags: 0

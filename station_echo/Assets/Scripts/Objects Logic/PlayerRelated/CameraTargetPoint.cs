@@ -11,6 +11,7 @@ public class CameraTargetPoint : MonoBehaviour
     public float smoothTime = 5f;
     private Vector3 offsetVelocity = Vector3.zero;
 
+    public int currentGravityDirection = 1;
     private Vector3 previousOffset = Vector3.zero;
     private GameObject parentObject;
     private float timeSinceChange = 0f;
@@ -39,6 +40,10 @@ public class CameraTargetPoint : MonoBehaviour
             orbitalFollow.Orbits.Top.Height = -orbitalFollow.Orbits.Top.Height;
             orbitalFollow.Orbits.Center.Height = -orbitalFollow.Orbits.Center.Height;
             orbitalFollow.Orbits.Bottom.Height = -orbitalFollow.Orbits.Bottom.Height;
+            if (cinemachineCamera.TryGetComponent<CinemachineRecomposer>(out var recomposer))
+            {
+                recomposer.Dutch += 180f;
+            }
             timeSinceChange = 0f;
 
             playerMesh.Rotate(Vector3.forward, 180f);
@@ -53,13 +58,13 @@ public class CameraTargetPoint : MonoBehaviour
             {
                 foreach (var controller in inputAxisController.Controllers)
                 {
-                    if (controller.Name == "Look Orbit Y")
+                    if (controller.Name == "Look Orbit X")
                     {
                         controller.Input.Gain = -controller.Input.Gain;
                     }
                 }
             }
-            
+            currentGravityDirection *= -1;
             
         }
 

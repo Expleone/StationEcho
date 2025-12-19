@@ -180,6 +180,11 @@ public class ThirdPersonMovement : MonoBehaviour
         swapper = mesh.GetComponentInChildren<MaterialSwapper>();
     }
 
+    void Start()
+    {
+        cameraTargetPoint = transform.GetComponentInChildren<CameraTargetPoint>();
+    }
+
 
 
 
@@ -259,11 +264,11 @@ public class ThirdPersonMovement : MonoBehaviour
         Vector3 direction = new Vector3(_direction2d.x, 0f, _direction2d.y).normalized;
         Vector3 horizontalDelta = Vector3.zero;
 
-        
+        direction.x *= cameraTargetPoint.currentGravityDirection;
         
         if (direction.magnitude >= 0.1f)
         {
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
+            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y ;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
 
             Vector3 currentRotation = transform.eulerAngles;

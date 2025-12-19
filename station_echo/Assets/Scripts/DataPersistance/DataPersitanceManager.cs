@@ -64,6 +64,7 @@ public class DataPersitanceManager : MonoBehaviour
 
     public void NewGame()
     {
+
         this.gameData = new GameData();
         if (!gameData.levels.ContainsKey(levelId))
         {
@@ -100,6 +101,7 @@ public class DataPersitanceManager : MonoBehaviour
             }
             isNewGame = false;
             SaveGame();
+            SetGravityNormal();
             return;
         }
 

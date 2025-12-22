@@ -6,6 +6,7 @@ using NUnit.Framework;
 using UnityEditor.UI;
 #endif
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using UnityEngine.InputSystem;
 
 [DefaultExecutionOrder(-50)]
@@ -49,7 +50,22 @@ public class PlayerInteractionLogic : MonoBehaviour
             }
             return; 
         }
-
+        
+        for (int i = availableInteractions.Count - 1; i >= 0; i--)
+        {
+            if (availableInteractions[i] == null)
+            {
+                availableInteractions.RemoveAt(i);
+            }
+        }
+        
+        for (int i = unavailableInteractions.Count - 1; i >= 0; i--)
+        {
+            if (unavailableInteractions[i] == null)
+            {
+                unavailableInteractions.RemoveAt(i);
+            }
+        }
         if (availableInteractions.Count == 0)
         {
             if (currentPlayerInteraction != null)
@@ -60,6 +76,8 @@ public class PlayerInteractionLogic : MonoBehaviour
             return;
         }
 
+        
+        
         availableInteractions.Sort(new SortByProximity(transform));
         GameObject nearestObject = availableInteractions[0];
 
@@ -116,37 +134,26 @@ public class PlayerInteractionLogic : MonoBehaviour
             IsDroped = false;
             return;
         }
+        int physicsDir = Physics.gravity.y > 0 ? 1 : -1;
 
-        if(Physics.gravity == new Vector3(0, 0, 1))
-        {
-            float bottomY = transform.position.y - transform.localScale.y / 2;
-            float upperY = heldRb.transform.localScale.y / 2 + heldRb.transform.position.y;
+        float bottomY = transform.position.y + physicsDir * transform.localScale.y / 2;
+        float upperY = heldRb.transform.position.y - physicsDir * heldRb.transform.localScale.y / 2;
 
-            if(upperY + 0.1f < bottomY)
-            {
-                DropObject();
-            }
-        }
-        else if (Physics.gravity == new Vector3(0, 0, -1))
-        {
-            float bottomY = heldRb.transform.localScale.y / 2 + heldRb.transform.position.y;
-            float upperY = transform.position.y - transform.localScale.y / 2;
-
-            if(upperY + 0.1f < bottomY)
-            {
-                DropObject();
-            }
+        if(-physicsDir * (upperY + 0.1f) < -physicsDir * bottomY){
+            DropObject(false);
         }
     }
 
-    void DropObject()
+    void DropObject(bool applyVelocity = true)
     {
         heldRb.GetComponent<Interactable>().SetBearerTransform(null);
         heldRb.transform.SetParent(null);
         heldRb.useGravity = true;
         heldRb.linearVelocity = Vector3.zero;
         heldRb.angularVelocity = Vector3.zero;
-        heldRb.AddForce(characterController.velocity, ForceMode.VelocityChange);
+        if (applyVelocity && characterController != null){
+            heldRb.AddForce(characterController.velocity, ForceMode.VelocityChange);
+        }
         // print ("Dropped with velocity: " + characterController.velocity);
         heldRb = null;
     }

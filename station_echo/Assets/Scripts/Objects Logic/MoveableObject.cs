@@ -35,6 +35,9 @@ public class MoveableObject : MonoBehaviour
     bool CheckGround()
     {
         Vector3 castDirection = Physics.gravity.normalized;
+         if (transform.GetComponent<ReverceGravitation>() != null){
+            castDirection = -castDirection;
+        }
         float groundCheckDistance = transform.localScale.y / 2f + 0.1f;
         Vector3 castOrigin = transform.position;
         bool isHit = Physics.Raycast(castOrigin, castDirection, out groundHit, groundCheckDistance, groundMask);

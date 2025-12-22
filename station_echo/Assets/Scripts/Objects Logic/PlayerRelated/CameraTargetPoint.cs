@@ -18,18 +18,32 @@ public class CameraTargetPoint : MonoBehaviour
     [SerializeField] private CinemachineCamera cinemachineCamera;
     [SerializeField] private Transform playerMesh;
     private CinemachineOrbitalFollow orbitalFollow;
+    private float currentDutch;
+
+    CinemachineRecomposer recomposer;
     private void Start()
     {
+        currentDutch = 0f;
         // Initialize the target point for the camera
         newOffset = offset;
+        cinemachineCamera.TryGetComponent<CinemachineRecomposer>(out recomposer);
 
         parentObject = transform.parent.gameObject;
         orbitalFollow = (CinemachineOrbitalFollow)cinemachineCamera.GetCinemachineComponent(CinemachineCore.Stage.Body);
     }
 
+    void Update()
+    {
+        if (recomposer != null)
+        {
+            recomposer.Dutch = Mathf.MoveTowards(recomposer.Dutch, currentDutch, 360f * Time.deltaTime);
+        }
+    }
+
     // Update is called once per frame
     void FixedUpdate()
     {
+        
 
         if (Vector3.Dot(newOffset, Physics.gravity.normalized) > 0)
         {
@@ -40,10 +54,10 @@ public class CameraTargetPoint : MonoBehaviour
             orbitalFollow.Orbits.Top.Height = -orbitalFollow.Orbits.Top.Height;
             orbitalFollow.Orbits.Center.Height = -orbitalFollow.Orbits.Center.Height;
             orbitalFollow.Orbits.Bottom.Height = -orbitalFollow.Orbits.Bottom.Height;
-            if (cinemachineCamera.TryGetComponent<CinemachineRecomposer>(out var recomposer))
-            {
-                recomposer.Dutch += 180f;
-            }
+        
+            if (currentDutch == 180f) currentDutch = 0f;
+            else currentDutch = 180f;
+
             timeSinceChange = 0f;
 
             playerMesh.Rotate(Vector3.forward, 180f);

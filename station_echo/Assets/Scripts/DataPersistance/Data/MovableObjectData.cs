@@ -10,6 +10,14 @@ public class MovableObjectData : MonoBehaviour, IDataPersistance
         id = System.Guid.NewGuid().ToString();
     }
 
+    void Start()
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            GenerateGuid();
+        }    
+    }
+
     public void LoadData(GameData data, string levelId)
     {
         if (data.levels[levelId].objectsPositions.TryGetValue(id, out var pos))

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 137570216306990345}
   - component: {fileID: 2952409622537307856}
   - component: {fileID: 8799943255545706779}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: PuzzleMark
   m_TagString: Untagged
   m_Icon: {fileID: 0}

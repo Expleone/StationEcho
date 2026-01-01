@@ -49,6 +49,8 @@ public class PressurePlate : MonoBehaviour
     {
         if (other.CompareTag("PlayerInteractionArea"))
             return;
+
+        print("Pressure plate triggered by " + other.gameObject.name);
         objectsOnPlate.Add(other.gameObject);
         if (!IsPressed && objectsOnPlate.Count > 0)
         {

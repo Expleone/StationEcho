@@ -8,7 +8,8 @@ public class Controller : MonoBehaviour
         OPEN_DOORS,
         CHANGE_GRAVITY,
         ACTIVATE_PLATFORM,
-        DISPENSE_ITEM
+        DISPENSE_ITEM,
+        ACTIVATE_TRAMPOLINO,
     }
 
     public enum ActivationMode
@@ -30,6 +31,7 @@ public class Controller : MonoBehaviour
     public List<Switch> switches;
     public List<Button> buttons;
     public List<Dispenser> dispensers;
+    public List<Trampolino> trampolinos;
 
     private Vector3 gravityStatePast;
     private  bool objectDispensed = false;
@@ -40,6 +42,7 @@ public class Controller : MonoBehaviour
         else if(whatToDo == WhatToDoOptions.ACTIVATE_PLATFORM)  platforms = new List<PlatformLogic>(GetComponentsInChildren<PlatformLogic>());
         else if(whatToDo == WhatToDoOptions.CHANGE_GRAVITY)     gravityStatePast = Physics.gravity;
         else if(whatToDo == WhatToDoOptions.DISPENSE_ITEM)      dispensers = new List<Dispenser>(GetComponentsInChildren<Dispenser>());
+        else if(whatToDo == WhatToDoOptions.ACTIVATE_TRAMPOLINO) trampolinos = new List<Trampolino>(GetComponentsInChildren<Trampolino>());
 
         plates = new List<PressurePlate>(GetComponentsInChildren<PressurePlate>());
         switches = new List<Switch>(GetComponentsInChildren<Switch>());
@@ -151,6 +154,20 @@ public class Controller : MonoBehaviour
                     else
                     {
                         if (platform.allowedToMove) platform.allowedToMove = false;
+                    }
+                }
+            break;
+
+            case WhatToDoOptions.ACTIVATE_TRAMPOLINO :
+                foreach (var trampolino in trampolinos)
+                {
+                    if (flag)
+                    {
+                        if (!trampolino.isActive) trampolino.SetActive(true);
+                    }
+                    else
+                    {
+                        if (trampolino.isActive) trampolino.SetActive(false);
                     }
                 }
             break;

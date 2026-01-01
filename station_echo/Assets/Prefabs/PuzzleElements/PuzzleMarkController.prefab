@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5096363913651721416}
   - component: {fileID: 8560772070781957998}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: PuzzleMarkController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -58,6 +58,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PuzzleMark
+      objectReference: {fileID: 0}
+    - target: {fileID: 4577331058511665617, guid: 81c4094ac91ae33448617176a5adbfd9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5231168109858191337, guid: 81c4094ac91ae33448617176a5adbfd9,
         type: 3}

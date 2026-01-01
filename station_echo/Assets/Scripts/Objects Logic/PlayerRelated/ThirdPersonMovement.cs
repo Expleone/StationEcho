@@ -42,13 +42,16 @@ public class ThirdPersonMovement : MonoBehaviour
     private Animator animator;
     private MaterialSwapper swapper;
     Vector3 verticalVelocity = Vector3.zero;
-    Vector3 horizontalVelocity = Vector3.zero;
+    Vector3 ownHorizontalVelocity = Vector3.zero;
+    RaycastHit hitForward;
+    Vector3 givenHorizontalVelocity = Vector3.zero;
 
     private Vector2 _direction2d;
     private bool _sprintHeld;
 
     private bool wasSprinting = false;
     private bool _jumpTriggered;
+    bool isAllowedToControl = true;
 
     private MoveableObject moveableObject;
 
@@ -119,14 +122,58 @@ public class ThirdPersonMovement : MonoBehaviour
 
     bool CheckForward()
     {
-        Vector3 castDir = horizontalVelocity.normalized;
-        float castDistance = controller.radius + 0.1f;
-        Vector3 castOrigin = controller.center;
-        bool isHitForward = Physics.CapsuleCast(castOrigin + transform.up * (controller.height - controller.radius) , castOrigin - transform.up * (controller.height - controller.radius), controller.radius, castDir, out RaycastHit hitForward, castDistance, groundMask);
-        return isHitForward;
+        Vector3 horizontalVelocity = ownHorizontalVelocity + givenHorizontalVelocity;
 
+        // 1. Handle zero velocity to prevent errors
+        if (horizontalVelocity.sqrMagnitude < 0.01f) return false;
+
+        Vector3 castDir = horizontalVelocity.normalized;
+        
+        // 2. Convert local controller center to world space
+        Vector3 worldCenter = transform.TransformPoint(controller.center);
+
+        // 3. Calculate distance from center to the hemispherical ends
+        // The height is the total height; we subtract two radii to find the cylinder part
+        float halfCylinderHeight = (controller.height * 0.5f) - controller.radius;
+
+        // 4. Define the top and bottom spheres of the capsule
+        Vector3 pointTop = worldCenter + transform.up * halfCylinderHeight;
+        Vector3 pointBottom = worldCenter - transform.up * halfCylinderHeight;
+
+        // 5. Cast slightly further than the radius to detect upcoming walls
+        float castDistance = 0.2f; 
+
+        bool isHitForward = Physics.CapsuleCast(
+            pointTop, 
+            pointBottom, 
+            controller.radius, 
+            castDir, 
+            out hitForward, 
+            castDistance, 
+            groundMask
+        );
+
+        return isHitForward;
     }
 
+    Vector3 SubtractOppositeComponent(Vector3 velocity, Vector3 wind)
+    {
+        // 1. Project wind onto the velocity direction
+        // This gives us the portion of wind acting along the velocity's axis
+        Vector3 projection = Vector3.Project(wind, velocity);
+
+        // 2. Check if the projection is opposite to the velocity
+        // If the Dot product is less than 0, they are facing away from each other
+        if (Vector3.Dot(velocity, projection) < 0)
+        {
+            // 3. Subtract that opposite component
+            // Subtracting a negative-facing vector effectively "cancels" that force
+            velocity = Vector3.MoveTowards(velocity, Vector3.zero, projection.magnitude);
+        }
+
+        // If the vector isn't opposite, return the original velocity
+        return velocity;
+    }
 
     private void OnDrawGizmos()
     {
@@ -249,8 +296,38 @@ public class ThirdPersonMovement : MonoBehaviour
             }
         }
 
+        if(CheckForward())
+        {
+            // 1. Get the normal of the surface we hit
+            Vector3 surfaceNormal = hitForward.normal;
+
+            // 2. Find the 'dot product' - this is the magnitude of velocity 
+            // pointing directly into the surface normal
+            float dotOwn = Vector3.Dot(ownHorizontalVelocity, surfaceNormal);
+            float dotGiven = Vector3.Dot(givenHorizontalVelocity, surfaceNormal);
+            // 3. If the dot product is negative, it means we are moving TOWARD the surface
+            if (dotOwn < 0)
+            {
+                // 4. Calculate the 'rejection' vector (the part of velocity hitting the wall)
+                Vector3 velocityIntoWall = surfaceNormal * dotOwn;
+
+                // 5. Subtract it from the current velocity to get the sliding velocity
+                ownHorizontalVelocity -= velocityIntoWall;
+            }
+
+            if (dotGiven < 0)
+            {
+                // 4. Calculate the 'rejection' vector (the part of velocity hitting the wall)
+                Vector3 velocityIntoWall = surfaceNormal * dotGiven;
+
+                // 5. Subtract it from the current velocity to get the sliding velocity
+                givenHorizontalVelocity -= velocityIntoWall;
+            }
+        }
+
         if (isGrounded){
             wasSprinting = _sprintHeld;
+            isAllowedToControl = true;
         }
 
         if (Vector3.Dot(verticalVelocity, Physics.gravity) < 0 && !canMoveUpwards())
@@ -277,21 +354,28 @@ public class ThirdPersonMovement : MonoBehaviour
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             CalculateCurrentMaxSpeed(isGrounded);
             CalculateHorizontalVelocity(moveDir, isGrounded);
-            horizontalDelta = horizontalVelocity * Time.fixedDeltaTime;
+            horizontalDelta = ownHorizontalVelocity * Time.fixedDeltaTime;
+            if(isGrounded) givenHorizontalVelocity = Vector3.MoveTowards(givenHorizontalVelocity, Vector3.zero, horizontalDeceleration * Time.fixedDeltaTime);
+            givenHorizontalVelocity = SubtractOppositeComponent(givenHorizontalVelocity, ownHorizontalVelocity*Time.fixedDeltaTime);
         }
         else
         {
             if (isGrounded)
             {
-                horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, Vector3.zero, horizontalDeceleration * Time.fixedDeltaTime);
-                horizontalDelta = horizontalVelocity * Time.fixedDeltaTime;
+                givenHorizontalVelocity = Vector3.MoveTowards(givenHorizontalVelocity, Vector3.zero, horizontalDeceleration * Time.fixedDeltaTime);
+                ownHorizontalVelocity = Vector3.MoveTowards(ownHorizontalVelocity, Vector3.zero, horizontalDeceleration * Time.fixedDeltaTime);
+                horizontalDelta = ownHorizontalVelocity * Time.fixedDeltaTime;
             }else{
-                horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, Vector3.zero, (midAirHorizontalAcceleration) * Time.fixedDeltaTime);
-                horizontalDelta = horizontalVelocity * Time.fixedDeltaTime;
+                
+                ownHorizontalVelocity = Vector3.MoveTowards(ownHorizontalVelocity, Vector3.zero, (midAirHorizontalAcceleration) * Time.fixedDeltaTime);
+                horizontalDelta = ownHorizontalVelocity * Time.fixedDeltaTime;
             }
         }
 
-        Vector3 finalDelta = horizontalDelta + verticalDelta + platformDelta;
+        
+        // print(" givenHorizontalVelocity: " + givenHorizontalVelocity);
+        // print(" ownHorizontalVelocity: " + ownHorizontalVelocity);
+        Vector3 finalDelta = horizontalDelta + verticalDelta + platformDelta + givenHorizontalVelocity * Time.fixedDeltaTime;
         controller.Move(finalDelta);
 
         setAnimation(direction.magnitude, _sprintHeld);
@@ -317,10 +401,21 @@ public class ThirdPersonMovement : MonoBehaviour
         }
     }
 
+    public void AddVelocity(Vector3 velocityToAdd)
+    {
+        givenHorizontalVelocity = new Vector3(givenHorizontalVelocity.x + velocityToAdd.x, givenHorizontalVelocity.y, givenHorizontalVelocity.z + velocityToAdd.z);
+        verticalVelocity = new Vector3(verticalVelocity.x, verticalVelocity.y + velocityToAdd.y, verticalVelocity.z);  
+    }
+
+    public void SetAllowedToControl(bool allowed)
+    {
+        isAllowedToControl = allowed;
+    }
+
     private void CalculateHorizontalVelocity(Vector3 moveDir, bool isGrounded){
         Vector3 targetVelocity = moveDir * currentMaxSpeed;
         float acceleration = isGrounded ? baseHorizontalAcceleration : midAirHorizontalAcceleration;
-        horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, targetVelocity, acceleration * Time.fixedDeltaTime);
+        ownHorizontalVelocity = Vector3.MoveTowards(ownHorizontalVelocity, targetVelocity, acceleration * Time.fixedDeltaTime);
     }
 
     private void setAnimation(float magnitude, bool isRunning)

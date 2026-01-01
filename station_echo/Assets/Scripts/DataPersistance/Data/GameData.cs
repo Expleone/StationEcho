@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 
 [System.Serializable]
@@ -14,8 +15,9 @@ public class LevelData
 public class GameData
 {
     public string currentLevel = "TutorialLevel";
-    public Vector3 extraPosition = new Vector3();
-    public int currentPlatformWaypoint = 0;
+    public Dictionary<string, Vector3> extraPositions = new Dictionary<string, Vector3>();
+    public Dictionary<string, int> currentPlatformWaypoints = new Dictionary<string, int>();
+   
     // public Vector3 playerPosition = new Vector3();
     // public Vector3 cameraPosition = new Vector3();
     // public Quaternion cameraRotation = new Quaternion();

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -21,6 +23,13 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
     private Vector3 currentMovement = new Vector3(0, 0, 0);
     private Vector3 currentMovementGlobal = new Vector3(0, 0, 0);
     private Vector3 extraPosition = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+    [SerializeField] private string id;
+
+    [ContextMenu("Generate guid for id")]
+    private void GenerateGuid()
+    {
+        id = System.Guid.NewGuid().ToString();
+    }
     public Vector3 GetPropagationMovement()
     {
         return currentMovementGlobal;
@@ -29,6 +38,7 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
 
     void Start()
     {
+        GenerateGuid();
         if (transform.childCount == 0)
         {
             Debug.LogError("Critical Failure: Platform does not contain PlatformObject");
@@ -203,13 +213,13 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
 
     public void LoadData(GameData data, string levelId)
     {
-        this.extraPosition = data.extraPosition;
-        this.currentWaypoint = data.currentPlatformWaypoint;
+        this.extraPosition = data.extraPositions[id];
+        this.currentWaypoint = data.currentPlatformWaypoints[id];
     }
 
     public void SaveData(ref GameData data, string levelId)
     {
-        data.extraPosition = this.extraPosition;
-        data.currentPlatformWaypoint = this.currentWaypoint;
+        data.extraPositions[id] = this.extraPosition;
+        data.currentPlatformWaypoints[id] = this.currentWaypoint;
     }
 }

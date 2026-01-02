@@ -10,6 +10,8 @@ public class LevelData
     public Vector3 cameraPosition = new Vector3();
     public Quaternion cameraRotation = new Quaternion();
     public SerializableDictionary<string, Vector3> objectsPositions = new SerializableDictionary<string, Vector3>();
+
+    public SerializableDictionary<string, Dispenser> objectsDispensors = new SerializableDictionary<string, Dispenser>();
     public SerializableDictionary<string, bool> switchIsPressed = new SerializableDictionary<string, bool>();
     public SerializableDictionary<string, bool> controllerGravityChanged = new SerializableDictionary<string, bool>();
     public bool isCompleted = false;

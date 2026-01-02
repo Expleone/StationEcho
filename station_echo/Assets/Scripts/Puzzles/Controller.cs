@@ -16,7 +16,7 @@ public class Controller : MonoBehaviour
     {
         AND,
         OR,
-	    XOR,
+        XOR,
     }
 
     [Header("Activation Settings")]
@@ -33,50 +33,51 @@ public class Controller : MonoBehaviour
     public List<Dispenser> dispensers;
     public List<Trampolino> trampolinos;
 
-    private Vector3 gravityStatePast;
-    private  bool objectDispensed = false;
+    public Vector3 gravityStatePast;
+    private bool objectDispensed = false;
+    public bool gravityChanged = false;
 
     private void Start()
     {
-        if(whatToDo == WhatToDoOptions.OPEN_DOORS)              doors = new List<Door>(GetComponentsInChildren<Door>());
-        else if(whatToDo == WhatToDoOptions.ACTIVATE_PLATFORM)  platforms = new List<PlatformLogic>(GetComponentsInChildren<PlatformLogic>());
-        else if(whatToDo == WhatToDoOptions.CHANGE_GRAVITY)     gravityStatePast = Physics.gravity;
-        else if(whatToDo == WhatToDoOptions.DISPENSE_ITEM)      dispensers = new List<Dispenser>(GetComponentsInChildren<Dispenser>());
-        else if(whatToDo == WhatToDoOptions.ACTIVATE_TRAMPOLINO) trampolinos = new List<Trampolino>(GetComponentsInChildren<Trampolino>());
+        if (whatToDo == WhatToDoOptions.OPEN_DOORS) doors = new List<Door>(GetComponentsInChildren<Door>());
+        else if (whatToDo == WhatToDoOptions.ACTIVATE_PLATFORM) platforms = new List<PlatformLogic>(GetComponentsInChildren<PlatformLogic>());
+        else if (whatToDo == WhatToDoOptions.CHANGE_GRAVITY) gravityStatePast = Physics.gravity;
+        else if (whatToDo == WhatToDoOptions.DISPENSE_ITEM) dispensers = new List<Dispenser>(GetComponentsInChildren<Dispenser>());
+        else if (whatToDo == WhatToDoOptions.ACTIVATE_TRAMPOLINO) trampolinos = new List<Trampolino>(GetComponentsInChildren<Trampolino>());
 
         plates = new List<PressurePlate>(GetComponentsInChildren<PressurePlate>());
         switches = new List<Switch>(GetComponentsInChildren<Switch>());
         buttons = new List<Button>(GetComponentsInChildren<Button>());
 
-        foreach(var platform in platforms)
+        foreach (var platform in platforms)
         {
             platform.allowedToMove = false;
         }
-        if(whatToDo == WhatToDoOptions.DISPENSE_ITEM)
+        if (whatToDo == WhatToDoOptions.DISPENSE_ITEM)
         {
-            foreach(var button in buttons)
+            foreach (var button in buttons)
             {
                 button.ActiveTime = dispensers[0].GetDispenseDelay();
             }
         }
-        
+
     }
 
     private void Update()
     {
         bool allActive = true;
         bool anyActive = false;
-	    bool moreThanOneActive = false;
-        
+        bool moreThanOneActive = false;
+
         foreach (var plate in plates)
         {
             if (plate != null)
             {
                 if (plate.IsPressed)
-		{ 
-		    if(anyActive) moreThanOneActive = true;
-		    anyActive = true;
-		}
+                {
+                    if (anyActive) moreThanOneActive = true;
+                    anyActive = true;
+                }
                 else allActive = false;
             }
         }
@@ -86,10 +87,10 @@ public class Controller : MonoBehaviour
             if (sw != null)
             {
                 if (sw.IsOn)
-		{ 
-		    if(anyActive) moreThanOneActive = true;
-		    anyActive = true;
-		}
+                {
+                    if (anyActive) moreThanOneActive = true;
+                    anyActive = true;
+                }
                 else allActive = false;
             }
         }
@@ -99,33 +100,36 @@ public class Controller : MonoBehaviour
             if (btn != null)
             {
                 if (btn.IsPressed)
-		{ 
-		    if(anyActive) moreThanOneActive = true;
-		    anyActive = true;
-		}
+                {
+                    if (anyActive) moreThanOneActive = true;
+                    anyActive = true;
+                }
                 else allActive = false;
             }
         }
 
-	
+
         bool flag = false; //shows whether we will open doors or change gravity
-        switch(activationMode)
+        switch (activationMode)
         {
-            case ActivationMode.OR : flag = anyActive; 
-            break;
+            case ActivationMode.OR:
+                flag = anyActive;
+                break;
 
-            case ActivationMode.AND : flag = allActive;
-            break;
+            case ActivationMode.AND:
+                flag = allActive;
+                break;
 
-            case ActivationMode.XOR : flag = !(moreThanOneActive || !anyActive);
-            break;
+            case ActivationMode.XOR:
+                flag = !(moreThanOneActive || !anyActive);
+                break;
         }
 
         if (!flag) objectDispensed = false;
 
-        switch(whatToDo)
+        switch (whatToDo)
         {
-            case WhatToDoOptions.OPEN_DOORS :
+            case WhatToDoOptions.OPEN_DOORS:
                 foreach (var door in doors)
                 {
                     if (flag)
@@ -137,14 +141,14 @@ public class Controller : MonoBehaviour
                         if (door.IsOpen) door.Close();
                     }
                 }
-            break;
-            
-            case WhatToDoOptions.CHANGE_GRAVITY :
-            changeGravity(flag);
-            break;
+                break;
+
+            case WhatToDoOptions.CHANGE_GRAVITY:
+                changeGravity(flag);
+                break;
 
             // Platforms
-            case WhatToDoOptions.ACTIVATE_PLATFORM :
+            case WhatToDoOptions.ACTIVATE_PLATFORM:
                 foreach (var platform in platforms)
                 {
                     if (flag)
@@ -156,9 +160,9 @@ public class Controller : MonoBehaviour
                         if (platform.allowedToMove) platform.allowedToMove = false;
                     }
                 }
-            break;
+                break;
 
-            case WhatToDoOptions.ACTIVATE_TRAMPOLINO :
+            case WhatToDoOptions.ACTIVATE_TRAMPOLINO:
                 foreach (var trampolino in trampolinos)
                 {
                     if (flag)
@@ -170,9 +174,9 @@ public class Controller : MonoBehaviour
                         if (trampolino.isActive) trampolino.SetActive(false);
                     }
                 }
-            break;
+                break;
 
-            case WhatToDoOptions.DISPENSE_ITEM :
+            case WhatToDoOptions.DISPENSE_ITEM:
                 foreach (var dispenser in dispensers)
                 {
                     if (flag && !objectDispensed)
@@ -187,7 +191,7 @@ public class Controller : MonoBehaviour
                         objectDispensed = true;
                     }
                 }
-            break;
+                break;
         }
     }
 
@@ -200,20 +204,19 @@ public class Controller : MonoBehaviour
         }
     }
 
-    private bool gravityChanged = false;
-
     private void changeGravity(bool shouldChange)
     {
+        // Debug.Log("Should change: " + shouldChange + " gravityChanged: " + gravityChanged);
         if (shouldChange && !gravityChanged)
         {
-            gravityStatePast = Physics.gravity;
-            Physics.gravity = GravityChangerDirection;
+            // gravityStatePast = Physics.gravity;
+            Physics.gravity = -Physics.gravity;
             gravityChanged = true;
             //Debug.Log("true");
         }
         else if (!shouldChange && gravityChanged)
         {
-            Physics.gravity = gravityStatePast;
+            Physics.gravity = -Physics.gravity;
             gravityChanged = false;
             //Debug.Log("false");
         }

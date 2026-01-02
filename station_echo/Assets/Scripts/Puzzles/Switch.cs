@@ -41,11 +41,12 @@ public class Switch : MonoBehaviour
 
         visualStartPos = SwitchVisual.localPosition;
 
-        // вычисление фиксированной конечной позиции
         pressedPosition = visualStartPos + PressDirection.normalized * PressDistance;
 
         swapper = SwitchVisual.GetComponent<MaterialSwapper>();
         interactableComponent = GetComponent<Interactable>();
+
+        ApplyState();
     }
 
     private void Update()
@@ -107,5 +108,15 @@ public class Switch : MonoBehaviour
             yield return null;
         }
         SwitchVisual.localPosition = to;
+    }
+
+    public IEnumerator ApplyState()
+    {
+        yield return null;
+
+        if (!IsOn)
+            Unpress();
+        else
+            Press();
     }
 }

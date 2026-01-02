@@ -86,9 +86,6 @@ public class DataPersitanceManager : MonoBehaviour
             gameData.levels[levelId] = new LevelData();
         }
 
-        // TODO: Make a proper fix for reloading with gravity flipped
-        // SetGravityNormal();
-
         gameData.currentLevel = levelId;
         if (isNewGame || gameData.levels[levelId].isCompleted)
         {
@@ -110,6 +107,8 @@ public class DataPersitanceManager : MonoBehaviour
         {
             dataPersistanceObj.LoadData(gameData, levelId);
         }
+        // Apply last saved gravity vector
+        Physics.gravity = gameData.levels[levelId].currentGravitation;
     }
 
     public void SaveGame()
@@ -126,6 +125,7 @@ public class DataPersitanceManager : MonoBehaviour
         {
             dataPersistanceObj.SaveData(ref gameData, levelId);
         }
+        gameData.levels[levelId].currentGravitation = Physics.gravity;
 
         dataHandler.Save(gameData);
     }

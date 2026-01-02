@@ -3872,7 +3872,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 99c50173b57360a46b0bab0e84d5f0b1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2062efa64661fd240aa52941996a5075, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6669,7 +6669,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'LVL3:  Jump pad fun'
+  m_text: 'LVL3:  Jump-pad fun'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ea32f35b494f5b84bae0a7db78823f80, type: 2}
   m_sharedMaterial: {fileID: -630807655672139961, guid: ea32f35b494f5b84bae0a7db78823f80,

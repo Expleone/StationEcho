@@ -55,6 +55,8 @@ MonoBehaviour:
   plates: []
   switches: []
   buttons: []
+  dispensers: []
+  trampolinos: []
 --- !u!1001 &608952518890072137
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -86,22 +88,22 @@ PrefabInstance:
     - target: {fileID: 6657667623073457638, guid: 89e07657946476d41a6b582b47c0517d,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.83808964
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6657667623073457638, guid: 89e07657946476d41a6b582b47c0517d,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.010633386
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6657667623073457638, guid: 89e07657946476d41a6b582b47c0517d,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.545385
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6657667623073457638, guid: 89e07657946476d41a6b582b47c0517d,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0069196527
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6657667623073457638, guid: 89e07657946476d41a6b582b47c0517d,
         type: 3}

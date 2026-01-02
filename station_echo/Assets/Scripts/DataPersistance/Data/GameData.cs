@@ -19,7 +19,7 @@ public class LevelData
 }
 public class GameData
 {
-    public string currentLevel = "TutorialLevel";
+    public string currentLevel = "LVL0";
     public Dictionary<string, Vector3> extraPositions = new Dictionary<string, Vector3>();
     public Dictionary<string, int> currentPlatformWaypoints = new Dictionary<string, int>();
 

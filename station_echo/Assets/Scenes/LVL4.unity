@@ -40089,6 +40089,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovableObjectData
   id: c7bc19a0-cd3f-48da-8f86-218c55d0bdae
+  dispenser: {fileID: 0}
 --- !u!1 &754436940
 GameObject:
   m_ObjectHideFlags: 0
@@ -60814,7 +60815,7 @@ Transform:
   m_GameObject: {fileID: 1086573567}
   serializedVersion: 2
   m_LocalRotation: {x: 0.21885727, y: 0.67238504, z: -0.21885732, w: 0.67238486}
-  m_LocalPosition: {x: -1.919049, y: 20.078047, z: -2.65}
+  m_LocalPosition: {x: -56.726665, y: 5.3189373, z: -49.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -105496,6 +105497,11 @@ PrefabInstance:
         type: 3}
       propertyPath: visible
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2011810679309076170, guid: 909bf9527e1fee949bb1bc1be4e2d8f7,
+        type: 3}
+      propertyPath: MoveToMenu
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2011810679309076170, guid: 909bf9527e1fee949bb1bc1be4e2d8f7,
         type: 3}

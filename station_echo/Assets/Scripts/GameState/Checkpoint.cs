@@ -38,11 +38,11 @@ public class Checkpoint : MonoBehaviour
             else
             {
                 var interaction = other.GetComponentInParent<PlayerInteractionLogic>();
-                // bool isHolding = interaction != null && interaction.GetIsHolding();
-                // if (isHolding)
-                // {
-                //     Save();
-                // }
+                bool isHolding = interaction != null && interaction.GetIsHolding();
+                if (isHolding)
+                {
+                    Save();
+                }
             }
         }
     }

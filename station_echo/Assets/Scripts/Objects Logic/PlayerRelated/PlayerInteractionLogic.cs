@@ -15,16 +15,16 @@ public class PlayerInteractionLogic : MonoBehaviour
     [SerializeField] public LayerMask layerMask;
     [SerializeField] public float distanceToPickableItem;
     public CharacterController characterController;
-    public Transform holdPoint; 
+    public Transform holdPoint;
     public float moveForce = 40f;
     public float maxDistanceToObject = 5f;
     public List<GameObject> availableInteractions = new List<GameObject>();
     public List<GameObject> unavailableInteractions = new List<GameObject>();
     private Rigidbody heldRb = null;
     public OutlineAdder outlineAdder;
-    
+
     private GameObject currentPlayerInteraction = null;
-    private bool IsDroped  = false;
+    private bool IsDroped = false;
 
 
     private Material[] originalMaterials;
@@ -43,14 +43,14 @@ public class PlayerInteractionLogic : MonoBehaviour
                 outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
                 currentPlayerInteraction = null;
             }
-            
+
             if (InputSystem.actions.FindAction("Interact").triggered)
             {
                 IsDroped = true;
             }
-            return; 
+            return;
         }
-        
+
         for (int i = availableInteractions.Count - 1; i >= 0; i--)
         {
             if (availableInteractions[i] == null)
@@ -58,7 +58,7 @@ public class PlayerInteractionLogic : MonoBehaviour
                 availableInteractions.RemoveAt(i);
             }
         }
-        
+
         for (int i = unavailableInteractions.Count - 1; i >= 0; i--)
         {
             if (unavailableInteractions[i] == null)
@@ -76,8 +76,8 @@ public class PlayerInteractionLogic : MonoBehaviour
             return;
         }
 
-        
-        
+
+
         availableInteractions.Sort(new SortByProximity(transform));
         GameObject nearestObject = availableInteractions[0];
 
@@ -89,7 +89,7 @@ public class PlayerInteractionLogic : MonoBehaviour
             }
 
             outlineAdder.ApplyOutline(nearestObject.transform);
-            
+
             currentPlayerInteraction = nearestObject;
         }
 
@@ -104,13 +104,18 @@ public class PlayerInteractionLogic : MonoBehaviour
                 heldRb.rotation = Quaternion.identity;
                 heldRb.angularVelocity = Vector3.zero;
                 outlineAdder.RemoveOutline(currentPlayerInteraction.transform);
-                currentPlayerInteraction = null; 
+                currentPlayerInteraction = null;
             }
             else
             {
                 currentPlayerInteraction.GetComponent<Interactable>().Interact();
             }
         }
+    }
+
+    public bool GetIsHolding()
+    {
+        return heldRb != null;
     }
 
 
@@ -120,7 +125,7 @@ public class PlayerInteractionLogic : MonoBehaviour
         {
             heldRb.transform.localRotation = transform.rotation;
             MoveObjectToHand();
-            if(!heldRb)  return;
+            if (!heldRb) return;
             DropLogic();
         }
     }
@@ -139,7 +144,8 @@ public class PlayerInteractionLogic : MonoBehaviour
         float bottomY = transform.position.y + physicsDir * transform.localScale.y / 2;
         float upperY = heldRb.transform.position.y - physicsDir * heldRb.transform.localScale.y / 2;
 
-        if(-physicsDir * (upperY + 0.1f) < -physicsDir * bottomY){
+        if (-physicsDir * (upperY + 0.1f) < -physicsDir * bottomY)
+        {
             DropObject(false);
         }
     }
@@ -151,14 +157,15 @@ public class PlayerInteractionLogic : MonoBehaviour
         heldRb.useGravity = true;
         heldRb.linearVelocity = Vector3.zero;
         heldRb.angularVelocity = Vector3.zero;
-        if (applyVelocity && characterController != null){
+        if (applyVelocity && characterController != null)
+        {
             heldRb.AddForce(characterController.velocity, ForceMode.VelocityChange);
         }
         // print ("Dropped with velocity: " + characterController.velocity);
         heldRb = null;
     }
 
-    
+
 
 
 
@@ -166,18 +173,18 @@ public class PlayerInteractionLogic : MonoBehaviour
     {
         Vector3 directionToHand = holdPoint.position - heldRb.position;
 
-        if(directionToHand.magnitude > maxDistanceToObject)
+        if (directionToHand.magnitude > maxDistanceToObject)
         {
             heldRb.transform.SetParent(null);
             heldRb.useGravity = true;
             heldRb = null;
             return;
         }
-        
-        
+
+
         Vector3 targetVelocity = directionToHand / Time.fixedDeltaTime;
 
-        float maxSpeed = 15f; 
+        float maxSpeed = 15f;
         targetVelocity = Vector3.ClampMagnitude(targetVelocity, maxSpeed);
 
         if (characterController != null)

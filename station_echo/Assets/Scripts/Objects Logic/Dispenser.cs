@@ -133,7 +133,14 @@ public class Dispenser : MonoBehaviour
                 rbInstance.useGravity = false;
         }
         if (hasBody)
+        {
             StartCoroutine(MovePanels());
+        }
+        else
+        {
+            isDispensing = false;
+        }
+            
         return true;
 
     }

@@ -23,6 +23,7 @@ public class Dispenser : MonoBehaviour
 
     [SerializeField] private Barier barier;
     [SerializeField] private Vector3 CheckZoneSize = new Vector3(2f, 3f, 2f);
+    [SerializeField] private bool hasBody = true;
     private List<GameObject> allChildren = new List<GameObject>();
 
     private bool isDispensing = false;
@@ -30,6 +31,9 @@ public class Dispenser : MonoBehaviour
 
     private string activeMaterial = "active";
     private string inactiveMaterial = "inactive";
+
+    private bool ftSpawn = false;
+    private string cubeId;
 
     [SerializeField] private MaterialSwapper materialSwapper;
 
@@ -44,14 +48,22 @@ public class Dispenser : MonoBehaviour
     }
     void Start()
     {
-        
-        if(itemPrefab == null)
+
+        if (itemPrefab == null)
         {
             Debug.LogWarning("No item prefab assigned to Dispenser.");
         }
-        if(objectInstance != null)
+        if (objectInstance != null)
         {
             rbInstance = objectInstance.GetComponent<Rigidbody>();
+            MovableObjectData cubeData = objectInstance.GetComponent<MovableObjectData>();
+            cubeData.SetDispenser(this);
+            cubeId = cubeData.GetId();
+        }
+        else
+        {
+            Debug.Log("spawning cube for the first time");
+            ftSpawn = true;
         }
         initialDispensePointPosition = dispensePoint.localPosition;
         panel1.UseTimeBasedMovement = true;
@@ -59,9 +71,10 @@ public class Dispenser : MonoBehaviour
         panel1.OpenTime = 1.0f;
         panel2.OpenTime = 1.0f;
 
-        foreach(Transform child in transform)
+        foreach (Transform child in transform)
         {
             allChildren.Add(child.gameObject);
+
         }
         // #if UNITY_EDITOR
         outlineAdder = GetComponent<OutlineAdder>();
@@ -70,7 +83,8 @@ public class Dispenser : MonoBehaviour
 
     public bool DispenseItem()
     {
-        if (isDispensing || !IsDispancePlaceClear()) {
+        if (isDispensing || !IsDispancePlaceClear())
+        {
 
             // #if UNITY_EDITOR
             if (!tryingToDispense)
@@ -86,34 +100,56 @@ public class Dispenser : MonoBehaviour
         }
         isDispensing = true;
         tryingToDispense = false;
-        
-        if (itemPrefab == null) 
+
+        if (itemPrefab == null)
         {
             Debug.LogWarning("No item prefab assigned to Dispenser.");
             return false;
         }
-        if(objectInstance != null)
+
+        string id = string.Empty;
+        if (objectInstance != null)
         {
             Destroy(objectInstance);
         }
-        
-        if(itemPrefab != null)
+
+        if (itemPrefab != null)
         {
             objectInstance = Instantiate(itemPrefab, dispensePoint.position, Quaternion.identity);
-            rbInstance = objectInstance.GetComponent<Rigidbody>();
-            rbInstance.useGravity = false;
-        }
+            if (ftSpawn)
+            {
+                StartCoroutine(GetCubeID());
+            }
+            else
+            {
+                MovableObjectData cubeData = objectInstance.GetComponent<MovableObjectData>();
+                cubeData.SetId(cubeId);
+                cubeData.SetDispenser(this);
+                Debug.Log("ID was set to: " + cubeData.GetId());
+            }
 
-        StartCoroutine(MovePanels());
+            rbInstance = objectInstance.GetComponent<Rigidbody>();
+            if (hasBody)
+                rbInstance.useGravity = false;
+        }
+        if (hasBody)
+        {
+            StartCoroutine(MovePanels());
+        }
+        else
+        {
+            isDispensing = false;
+        }
+            
         return true;
-        
+
     }
 
     private System.Collections.IEnumerator KillObject(GameObject target)
     {
         // 1. Disable the collider first
         Collider col = target.GetComponent<Collider>();
-        if(col != null) 
+        if (col != null)
         {
             col.enabled = false; // This forces OnTriggerExit to fire immediately
         }
@@ -154,7 +190,7 @@ public class Dispenser : MonoBehaviour
 
     private void MoveDispensePoint(Vector3 moveVector)
     {
-        if(objectInstance != null)
+        if (objectInstance != null)
         {
             StartCoroutine(MovePos(dispensePoint, dispensePoint.localPosition, dispensePoint.localPosition + moveVector, 0.5f));
         }
@@ -173,18 +209,29 @@ public class Dispenser : MonoBehaviour
 
         objectTransform.localPosition = to;
     }
+    private System.Collections.IEnumerator GetCubeID()
+    {
+        yield return null;
+        MovableObjectData cubeData = objectInstance.GetComponent<MovableObjectData>();
+        cubeId = cubeData.GetId();
+        cubeData.SetDispenser(this);
+        Debug.Log("Got ID: " + cubeId);
+        ftSpawn = false;
+    }
+
 
     void FixedUpdate()
     {
-        if (objectInstance != null && rbInstance != null && isDispensing)
+        if (objectInstance != null && rbInstance != null && isDispensing && hasBody)
         {
             rbInstance.AddForce(1f * (dispensePoint.position - rbInstance.position), ForceMode.Acceleration);
         }
-    } 
+    }
 
     void Update()
     {
-        if (objectInstance == null || rbInstance == null){
+        if (objectInstance == null || rbInstance == null)
+        {
             tryingToDispense = true;
             DispenseItem();
         }
@@ -195,8 +242,8 @@ public class Dispenser : MonoBehaviour
         // 1. DEFINITIONS
         // If you want a 2x3x2 box, your half extents are 1x1.5x1
         Vector3 boxSize = CheckZoneSize; // Adjust for scale
-        Vector3 halfExtents = boxSize / 2f; 
-        
+        Vector3 halfExtents = boxSize / 2f;
+
         // Determine the center. (Assuming you want to check BELOW the dispenser?)
         // If you actually want UP, change Vector3.down to Vector3.up
         Vector3 center = transform.position + (Vector3.up * halfExtents.y);
@@ -211,7 +258,7 @@ public class Dispenser : MonoBehaviour
             }
             outlinedObjects.Clear();
         }
-        
+
         // 3. THE PHYSICS CHECK
         // Added 'orientation' so the box rotates with the dispenser
         Collider[] hitColliders = Physics.OverlapBox(center, halfExtents, orientation);
@@ -226,7 +273,7 @@ public class Dispenser : MonoBehaviour
                 isBlocked = true;
 
                 // #if UNITY_EDITOR
-                if(!outlinedObjects.Contains(hitCollider.gameObject))
+                if (!outlinedObjects.Contains(hitCollider.gameObject))
                 {
                     outlineAdder.ApplyOutline(hitCollider.transform);
                     outlinedObjects.Add(hitCollider.gameObject);
@@ -234,12 +281,12 @@ public class Dispenser : MonoBehaviour
                 // We don't return false immediately here so we can outline ALL blocking objects, 
                 // but if you only care about the first one, you can return false here.
                 // #endif
-                
+
                 print("Dispenser blocked by " + hitCollider.gameObject.name);
             }
         }
 
-        return !isBlocked; 
+        return !isBlocked;
     }
 
 
@@ -253,16 +300,32 @@ public class Dispenser : MonoBehaviour
         // Assuming the check is "Down" relative to the dispense point
         Vector3 boxSize = CheckZoneSize; // Adjust for scale
         Vector3 center = transform.position + (Vector3.up * (boxSize.y / 2));
-        
+
         // This allows the Gizmo to match the OverlapBox rotation
         Matrix4x4 rotationMatrix = Matrix4x4.TRS(center, transform.rotation, transform.lossyScale);
-        Gizmos.matrix = rotationMatrix; 
+        Gizmos.matrix = rotationMatrix;
 
         // 2. Draw the Cube (Pass Vector3.zero because the matrix handles the position)
         Gizmos.DrawWireCube(Vector3.zero, boxSize);
-        
+
         // Optional: Draw a faint fill to see volume
         Gizmos.color = new Color(1, 0, 0, 0.3f);
         Gizmos.DrawCube(Vector3.zero, boxSize);
+    }
+
+    public void DispenseItemAt(string Id, Vector3 pos)
+    {
+        Debug.Log("dispensed item with id " + Id + " at " + pos);
+        if (objectInstance != null)
+        {
+            Destroy(objectInstance);
+        }
+        objectInstance = Instantiate(itemPrefab, pos, Quaternion.identity);
+        MovableObjectData cubeData = objectInstance.GetComponent<MovableObjectData>();
+        cubeId = Id;
+        cubeData.SetId(Id);
+        cubeData.SetDispenser(this);
+        Debug.Log("ID was set to: " + cubeData.GetId());
+        rbInstance = objectInstance.GetComponent<Rigidbody>();
     }
 }

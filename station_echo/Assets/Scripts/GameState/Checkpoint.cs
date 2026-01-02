@@ -5,6 +5,8 @@ public class Checkpoint : MonoBehaviour
 {
     [SerializeField] private bool visible = true;
 
+    public bool triggerOnlyWithCube = false;
+
     // [Header("UI")]
     // public TextMeshProUGUI saveMessageText;
     private MeshRenderer meshRenderer;
@@ -29,9 +31,26 @@ public class Checkpoint : MonoBehaviour
     {
         if (other.CompareTag("Player") && !triggered)
         {
-            Debug.Log("Game saved");
-            DataPersitanceManager.instance.SaveGame();
-            triggered = true;
+            if (!triggerOnlyWithCube)
+            {
+                Save();
+            }
+            else
+            {
+                var interaction = other.GetComponentInParent<PlayerInteractionLogic>();
+                bool isHolding = interaction != null && interaction.GetIsHolding();
+                if (isHolding)
+                {
+                    Save();
+                }
+            }
         }
+    }
+
+    void Save()
+    {
+        Debug.Log("Game saved");
+        DataPersitanceManager.instance.SaveGame();
+        triggered = true;
     }
 }

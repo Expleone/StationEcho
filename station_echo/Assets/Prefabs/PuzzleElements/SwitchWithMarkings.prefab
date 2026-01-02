@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7170547529053428787}
   - component: {fileID: 2615593270570812504}
   - component: {fileID: 3991307901177679636}
+  - component: {fileID: 588696863663601946}
   m_Layer: 0
   m_Name: SwitchWithMarkings
   m_TagString: Untagged
@@ -122,6 +123,19 @@ MonoBehaviour:
   labelText: SWITCH
   labelColor: {r: 1, g: 1, b: 1, a: 1}
   labelOffset: {x: 0, y: 1, z: -0.2}
+--- !u!114 &588696863663601946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1931878250410209816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9e03918af46a9641a37542c07ed4a80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SwitchData
+  id: 
 --- !u!1001 &1575339364097138872
 PrefabInstance:
   m_ObjectHideFlags: 0

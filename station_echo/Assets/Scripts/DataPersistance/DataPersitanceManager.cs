@@ -16,6 +16,7 @@ public class DataPersitanceManager : MonoBehaviour
     private List<IDataPersistance> dataPersistanceObjects;
     private FileDataHandler dataHandler;
     private bool isNewGame = false;
+    // private PlayerInteractionLogic piLogic = null;
     private string levelId = "";
     private Vector3 gravityNormal;
     public static DataPersitanceManager instance { get; private set; }
@@ -86,15 +87,13 @@ public class DataPersitanceManager : MonoBehaviour
             gameData.levels[levelId] = new LevelData();
         }
 
-        // TODO: Make a proper fix for reloading with gravity flipped
-        // SetGravityNormal();
-
         gameData.currentLevel = levelId;
         if (isNewGame || gameData.levels[levelId].isCompleted)
         {
             Debug.Log("New Game: Scanning scene for default positions...");
 
             levelId = SceneManager.GetActiveScene().name;
+
             foreach (IDataPersistance dataPersistanceObj in dataPersistanceObjects)
             {
                 dataPersistanceObj.SaveData(ref gameData, levelId);
@@ -110,6 +109,10 @@ public class DataPersitanceManager : MonoBehaviour
         {
             dataPersistanceObj.LoadData(gameData, levelId);
         }
+        // Apply last saved gravity vector
+        Physics.gravity = gameData.levels[levelId].currentGravitation;
+        // Get PlayerInteractionLogic
+        // piLogic = gameData.levels[levelId].piLogic;
     }
 
     public void SaveGame()
@@ -126,6 +129,10 @@ public class DataPersitanceManager : MonoBehaviour
         {
             dataPersistanceObj.SaveData(ref gameData, levelId);
         }
+        // Save gravity
+        gameData.levels[levelId].currentGravitation = Physics.gravity;
+        // Save PlayerInteractionLogic
+        // gameData.levels[levelId].piLogic = piLogic;
 
         dataHandler.Save(gameData);
     }
@@ -163,6 +170,11 @@ public class DataPersitanceManager : MonoBehaviour
     public bool HasGameData()
     {
         return gameData != null;
+    }
+
+    public GameData GetGameData()
+    {
+        return gameData;
     }
 
     public string GetCurrentLevelId()

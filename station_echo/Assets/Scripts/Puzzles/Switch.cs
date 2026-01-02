@@ -30,6 +30,8 @@ public class Switch : MonoBehaviour
     private MaterialSwapper swapper;
     private InputAction interactAction;
 
+    [SerializeField] private Switch SameAs = null;
+    private bool sameVal = false;
     private Interactable interactableComponent;
 
     public PuzzleMarkController puzzleMarkController = null;
@@ -41,18 +43,26 @@ public class Switch : MonoBehaviour
 
         visualStartPos = SwitchVisual.localPosition;
 
-        // вычисление фиксированной конечной позиции
         pressedPosition = visualStartPos + PressDirection.normalized * PressDistance;
 
         swapper = SwitchVisual.GetComponent<MaterialSwapper>();
         interactableComponent = GetComponent<Interactable>();
+
+        ApplyState();
     }
 
     private void Update()
     {
-        if (interactableComponent.HasBeenInteractedWith())
+        if(SameAs != null && sameVal != SameAs.IsOn)
         {
             Toggle();
+            sameVal = SameAs.IsOn;
+        }
+        if (interactableComponent.HasBeenInteractedWith())
+        {
+
+            Toggle();
+            sameVal = IsOn;
             interactableComponent.ResetInteraction();
         }
     }
@@ -107,5 +117,15 @@ public class Switch : MonoBehaviour
             yield return null;
         }
         SwitchVisual.localPosition = to;
+    }
+
+    public IEnumerator ApplyState()
+    {
+        yield return null;
+
+        if (!IsOn)
+            Unpress();
+        else
+            Press();
     }
 }

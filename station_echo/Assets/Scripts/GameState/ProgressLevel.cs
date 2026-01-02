@@ -10,8 +10,10 @@ public class ProgressLevel : MonoBehaviour
     // [Header("UI")]
     // public TextMeshProUGUI saveMessageText;
     private MeshRenderer meshRenderer;
+    public MenuManager menuManager;
     public int NextLevelId;
     public string NextLevelName;
+    public bool MoveToMenu;
 
 #if UNITY_EDITOR
     void OnValidate()
@@ -26,6 +28,15 @@ public class ProgressLevel : MonoBehaviour
     {
         meshRenderer = GetComponent<MeshRenderer>();
         if (meshRenderer != null) meshRenderer.enabled = visible;
+
+        if (menuManager == null)
+        {
+            menuManager = FindFirstObjectByType<MenuManager>();
+            if (menuManager == null)
+            {
+                Debug.LogWarning("MenuManager not found in the scene.");
+            }
+        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -35,6 +46,11 @@ public class ProgressLevel : MonoBehaviour
             GameManager.Instance.UpdateGameState(GameState.Game);
             DataPersitanceManager.instance.NewGame();
             DataPersitanceManager.instance.SetCurrentLevelAsCompleted();
+            if (MoveToMenu)
+            {
+                menuManager.LoadGameStateMenu();
+                return;
+            }
             if (useLevelName)
             {
                 SceneManager.LoadScene(NextLevelName);

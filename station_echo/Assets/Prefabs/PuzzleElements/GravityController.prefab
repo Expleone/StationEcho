@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7520272421931564698}
   - component: {fileID: 4438576421613521402}
+  - component: {fileID: 3846762671187151692}
   m_Layer: 0
   m_Name: GravityController
   m_TagString: Untagged
@@ -54,6 +55,23 @@ MonoBehaviour:
   plates: []
   switches: []
   buttons: []
+  dispensers: []
+  trampolinos: []
+  gravityStatePast: {x: 0, y: 0, z: 0}
+  gravityChanged: 0
+--- !u!114 &3846762671187151692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8936925846735074038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed9f9aa354a98cd4fb6157b522358423, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ControllerData
+  id: 
 --- !u!1001 &2938726729881130165
 PrefabInstance:
   m_ObjectHideFlags: 0

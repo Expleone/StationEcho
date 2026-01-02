@@ -52,19 +52,19 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
         }
         if (waypointTransforms.Count > 0)
         {   //Create a waypoint on the platform's local position
-            if(extraPosition == new Vector3(float.MaxValue, float.MaxValue, float.MaxValue))
+            if (extraPosition == new Vector3(float.MaxValue, float.MaxValue, float.MaxValue))
             {
-                GameObject spawned = Instantiate(waypointPrefab, Vector3.zero, Quaternion.identity, transform); 
+                GameObject spawned = Instantiate(waypointPrefab, Vector3.zero, Quaternion.identity, transform);
                 spawned.transform.localPosition = platformObjectTransform.localPosition;
                 spawned.GetComponent<AdvancedWaypointGizmos>().platformObjectTransform = platformObjectTransform;
                 waypointTransforms.Add(spawned.transform);
                 waypointCount = transform.childCount - 1;
-                
+
                 extraPosition = spawned.transform.localPosition;
             }
             else
             {
-                GameObject spawned = Instantiate(waypointPrefab, Vector3.zero, Quaternion.identity, transform); 
+                GameObject spawned = Instantiate(waypointPrefab, Vector3.zero, Quaternion.identity, transform);
                 spawned.transform.localPosition = extraPosition;
                 spawned.GetComponent<AdvancedWaypointGizmos>().platformObjectTransform = platformObjectTransform;
                 waypointTransforms.Add(spawned.transform);
@@ -77,7 +77,7 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
 
     void CreateMarkings()
     {
-        if(waypointCount == 2)
+        if (waypointCount == 2)
         {
             Transform first = waypointTransforms[0];
             Transform second = waypointTransforms[1];
@@ -85,17 +85,17 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
             return;
         }
 
-        for(int i = 0; i < waypointTransforms.Count; ++i)
+        for (int i = 0; i < waypointTransforms.Count; ++i)
         {
             Transform first = waypointTransforms[i];
             Transform second;
-            if(i == waypointTransforms.Count - 1)
+            if (i == waypointTransforms.Count - 1)
             {
                 second = waypointTransforms[0];
             }
             else
             {
-                second = waypointTransforms[i+1];
+                second = waypointTransforms[i + 1];
             }
             createMarking(first, second);
         }
@@ -123,7 +123,7 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
                     currentMovement = Vector3.zero;
                     currentMovementGlobal = Vector3.zero;
                     return;
-                } 
+                }
                 currentWaitTime = 0;
                 calculateNewLinVel();
             }
@@ -136,7 +136,7 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
                 currentMovement = Vector3.zero;
                 currentMovementGlobal = Vector3.zero;
                 return;
-            } 
+            }
             else if (hasArrived())  //Check if the platform has reached the waypoint
             {
                 platformObjectTransform.localPosition = waypointTransforms[currentWaypoint].localPosition;
@@ -158,7 +158,7 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
             }
         }
     }
-    
+
 
     private void calculateNewLinVel()
     {
@@ -186,19 +186,19 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
             float i = max.x;
             max.x = min.x;
             min.x = i;
-        } 
+        }
         if (min.y > max.y)
         {
             float i = max.y;
             max.y = min.y;
             min.y = i;
-        } 
+        }
         if (min.z > max.z)
         {
             float i = max.z;
             max.z = min.z;
             min.z = i;
-        } 
+        }
 
         Vector3 b = platformObjectTransform.localPosition;
 
@@ -213,13 +213,19 @@ public class PlatformLogic : MonoBehaviour, IDataPersistance
 
     public void LoadData(GameData data, string levelId)
     {
-        this.extraPosition = data.extraPositions[id];
-        this.currentWaypoint = data.currentPlatformWaypoints[id];
+        if (data.extraPositions != null && data.extraPositions.TryGetValue(id, out var savedExtraPos))
+            extraPosition = savedExtraPos;
+
+        if (data.currentPlatformWaypoints != null && data.currentPlatformWaypoints.TryGetValue(id, out var savedWaypoint))
+            currentWaypoint = savedWaypoint;
     }
 
     public void SaveData(ref GameData data, string levelId)
     {
-        data.extraPositions[id] = this.extraPosition;
-        data.currentPlatformWaypoints[id] = this.currentWaypoint;
+        if (data.extraPositions != null)
+            data.extraPositions[id] = extraPosition;
+
+        if (data.currentPlatformWaypoints != null)
+            data.currentPlatformWaypoints[id] = currentWaypoint;
     }
 }

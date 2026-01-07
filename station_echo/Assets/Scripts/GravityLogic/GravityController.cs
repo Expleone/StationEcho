@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+Implements the logic of a controller
+Input: Doors, Plates, Switches, Buttons
+*/
 public class GravityController : MonoBehaviour
 {
     public enum ActivationMode

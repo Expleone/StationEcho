@@ -1,32 +1,35 @@
 {
-    "title": "Packman",
-    "team": 33,
+    "title": "Station Echo",
+    "team": 14,
     "source": "hry_project",
     "has_web_build": true,
     "authors": [
         {
-            "fullname": "Jan Example",
-            "email": "exampjan@fel.cvut.cz"
+            "fullname": "Oleksandr Koshchii",
+            "email": "koshcol1@cvut.cz"
         },
         {
-            "fullname": "Aleš Vopršálek",
-            "email": "voprsale@fit.cvut.cz"
+            "fullname": "Yaroslav Danko",
+            "email": ""
+        },
+        {
+            "fullname": "Nazar Vasyltsiv",
+            "email": ""
+        },
+        {
+            "fullname": "Ihor Holub",
+            "email": ""
         }
     ],
-    "term": 241,
-    "summary": "A game focused on village protection with basic exploration of surroundings",
+    "term": 251,
+    "summary": "This game is a hybrid 3D platformer and puzzle experience that challenges players through a combination of spatial navigation and problem-solving. Core mechanics include gravity manipulation, pressure plates, buttons, spring-loaded platforms, and other interactive elements. The game features four fully developed levels designed to test players’ reaction time, attention to detail, ability to approach problems from different perspectives, and proficiency in controlling a third-person character within a 3D environment.",
     "opensource": true,
     "genres": [
-        "Action",
-        "Survival",
-        "Third-person"
+        "3D Platformer",
+        "Puzzle",
+        "Adventure"
     ],
     "links": {
-        "facebook": "https://www.facebook.com/...",
-        "instagram": "https://www.instagram.com/...",
-        "x": "https://www.x(twitter).com/...",
-        "itchio": "https://www.itch.io/...",
-        "discord": "https://www.discord.com/...",
-        "other": "https://www.other.com/..."
+
     }
 }

@@ -19,3 +19,6 @@ Hra by měla implementovat hlavní mechaniky klasických 3D platformerů, jako j
 * Ihor Holub <holubiho@cvut.cz>
 * Nazar Vasyltsiv <vasylnaz@cvut.cz>
 * Yaroslav Danko <dankoyar@cvut.cz>
+
+##Web-player
+[PLAY](https://cent.felk.cvut.cz/courses/39HRY/archives/2025-2026/team14/web-bin/index.html)
